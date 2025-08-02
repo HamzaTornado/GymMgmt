@@ -13,7 +13,7 @@ jobs:
         dotnet-version: '8.0.x'
     - run: dotnet restore && dotnet build -c Release
     - run: dotnet test --no-build -c Release --verbosity minimal
-    - run: dotnet publish src/GymMgmt.Api/GymMgmt.Api.csproj -c Release -r win-x64 --self-contained true -o ./release
+    - run: dotnet publish GymMgmt.Api/GymMgmt.Api.csproj -c Release -r win-x64 --self-contained true -o ./release
     - uses: actions/upload-artifact@v4
       with:
         name: gym-mgmt-release-${{ github.run_number }}
