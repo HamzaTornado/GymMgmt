@@ -19,9 +19,6 @@ namespace GymMgmt.Domain.Common.ValueObjects
 
         public InsuranceFee(decimal amount, bool isActive = true)
         {
-            if (amount < 0)
-                throw new InvalidInsuranceFeeAmountException(amount);
-
             Amount = amount;
             IsActive = isActive;
         }

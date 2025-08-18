@@ -36,24 +36,12 @@ namespace GymMgmt.Domain.Entities.Plans
                 int durationInDays,
                 decimal price)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new MembershipPlanNameRequiredException();
-            if (durationInDays <= 0)
-                throw new MembershipPlanDurationNotPositiveException(durationInDays);
-            if (price < 0)
-                throw new MembershipPlanPriceNegativeException(price);
 
             return new MembershipPlan(id, name, durationInDays, price);
         }
 
         public void Update(string name, int durationInDays, decimal price)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new MembershipPlanNameRequiredException();
-            if (durationInDays <= 0)
-                throw new MembershipPlanDurationNotPositiveException(durationInDays);
-            if (price < 0)
-                throw new MembershipPlanPriceNegativeException(price);
 
             Name = name;
             DurationInDays = durationInDays;

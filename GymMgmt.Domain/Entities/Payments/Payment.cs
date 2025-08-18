@@ -59,9 +59,6 @@ namespace GymMgmt.Domain.Entities.Payments
             Reference = reference;
             Notes = notes;
 
-            if (amount <= 0)
-                throw new SubscriptionPaymentAmountNotPositiveException(amount);
-
             if (periodStart >= periodEnd)
                 throw new SubscriptionPeriodInvalidException(periodStart,periodEnd);
         }

@@ -78,10 +78,6 @@ namespace GymMgmt.Domain.Entities.Members
         // Update methods
         public void UpdateName(string firstName, string lastName)
         {
-            if (string.IsNullOrWhiteSpace(firstName))
-                throw new MemberNameRequiredException(nameof(firstName));
-            if (string.IsNullOrWhiteSpace(lastName))
-                throw new MemberNameRequiredException(nameof(lastName));
 
             FirstName = firstName.Trim();
             LastName = lastName.Trim();

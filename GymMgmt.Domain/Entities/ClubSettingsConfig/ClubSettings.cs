@@ -76,9 +76,6 @@ namespace GymMgmt.Domain.Entities.ClubSettingsConfig
         /// </summary>
         public void UpdateSubscriptionGracePeriod(int periodInDays)
         {
-            if (periodInDays < 0)
-                throw new SubscriptionGracePeriodNegativeException(periodInDays);
-
             SubscriptionGracePeriodInDays = periodInDays;
         }
 
@@ -87,9 +84,6 @@ namespace GymMgmt.Domain.Entities.ClubSettingsConfig
         /// </summary>
         public void UpdateInsuranceValidity(int days)
         {
-            if (days <= 0)
-                throw new InsuranceValidityNotPositiveException(days);
-
             InsuranceValidityInDays = days;
         }
     }
