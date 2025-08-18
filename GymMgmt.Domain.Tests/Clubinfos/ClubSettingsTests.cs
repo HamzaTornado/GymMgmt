@@ -27,5 +27,52 @@ namespace GymMgmt.Domain.Tests.Clubinfos
             Assert.Equal(5, clubSetting.SubscriptionGracePeriodInDays);
             
         }
+
+        [Fact]
+        public void Update_InsuranceFee_ShouldSucced()
+        {
+            var insurancefee = new InsuranceFee(150m);
+
+            var clubSetting = ClubSettings.Create(InsuranceFee.Default());
+
+            clubSetting.UpdateInsuranceFee(insurancefee);
+
+
+            Assert.NotNull(clubSetting);
+            Assert.Equal(insurancefee.Amount, clubSetting.CurrentInsuranceFee.Amount);
+
+        }
+
+        [Fact]
+        public void Update_GracePeriod_ShouldSucced()
+        {
+            var gracePreiodIdDays = 10;
+
+            var clubSetting = ClubSettings.Create(InsuranceFee.Default());
+
+            clubSetting.UpdateSubscriptionGracePeriod(gracePreiodIdDays);
+
+
+            Assert.NotNull(clubSetting);
+            Assert.Equal(gracePreiodIdDays, clubSetting.SubscriptionGracePeriodInDays);
+
+        }
+
+        [Fact]
+        public void Update_InsuranceValidity_ShouldSucced()
+        {
+            var insuranceValidityIndays = 356*2;
+
+            var clubSetting = ClubSettings.Create(InsuranceFee.Default());
+
+            clubSetting.UpdateInsuranceValidity(insuranceValidityIndays);
+
+
+            Assert.NotNull(clubSetting);
+            Assert.Equal(insuranceValidityIndays, clubSetting.InsuranceValidityInDays);
+
+        }
+
+
     }
 }
