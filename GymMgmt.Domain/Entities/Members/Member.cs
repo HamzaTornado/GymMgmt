@@ -53,12 +53,6 @@ namespace GymMgmt.Domain.Entities.Members
             string? email,
             Address? address) 
         {
-            if (string.IsNullOrWhiteSpace(firstName))
-                return Result<Member>.Failure(ValidationError.Required(nameof(firstName)));
-            if (string.IsNullOrWhiteSpace(lastName))
-                return Result<Member>.Failure(ValidationError.Required(nameof(lastName)));
-            
-
             var member = new Member(
                 MemberId.New(),
                 firstName.Trim(),
