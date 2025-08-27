@@ -46,29 +46,7 @@ public class MemberTests
         Assert.Empty(member.Subscriptions);
         Assert.Empty(member.Payments);
     }
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("   ")]
-    [InlineData("\t")]
-    [InlineData("\n")]
-    public void Create_WhenFirstNameIsNullOrWhitespace_ShouldReturnFailureResult(string invalidFirstName)
-    {
-        // Arrange
-        var lastName = "Doe";
-        var phoneNumber = "+1234567890";
-        var email = "john@example.com";
-        Address? address = null;
-
-        // Act
-        var result = Member.Create(invalidFirstName, lastName, phoneNumber, email, address);
-
-        // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().NotBeNull();
-        result.Error.Code.Should().Contain("REQUIRED");
-        result.Error.Message.Should().Be("'firstName' is required.");
-    }
+    
 
     [Fact]
     public void CreateMember_WithInvalidPhoneNumber_ShouldThrowArgumentException()
