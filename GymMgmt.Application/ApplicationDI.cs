@@ -22,9 +22,8 @@ namespace GymMgmt.Application
                 cfg.RegisterServicesFromAssembly(assembly);
 
                 // Pipeline behaviors (order matters!)  
-                cfg.AddBehavior(typeof(ValidationBehavior<,>));       // 1. Validate  
-                cfg.AddBehavior(typeof(UnitOfWorkBehavior<,>));       // 2. Save changes  
-                                                                      // cfg.AddBehavior(typeof(LoggingBehavior<,>));       // 3. Log (optional)  
+                cfg.AddBehavior(typeof(ValidationBehavior<,>));       
+                cfg.AddBehavior(typeof(UnitOfWorkBehavior<,>));        
             });
 
             return services;

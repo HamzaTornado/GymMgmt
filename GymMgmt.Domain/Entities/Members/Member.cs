@@ -29,7 +29,7 @@ namespace GymMgmt.Domain.Entities.Members
         // EF Core
         private Member() { }
 
-        private Member(
+        internal Member(
             MemberId id,
             string firstName,
             string lastName,
@@ -53,14 +53,15 @@ namespace GymMgmt.Domain.Entities.Members
             string? email,
             Address? address) 
         {
-            var member = new Member(
-                MemberId.New(),
-                firstName.Trim(),
-                lastName.Trim(),
-                email?.Trim(),
-                PhoneNumber.Create(phoneNumber),
-                address
-            );
+            var member = new Member
+            {
+                Id = MemberId.New(),
+                FirstName = firstName.Trim(),
+                LastName = lastName.Trim(),
+                Email = email?.Trim(),
+                PhoneNumber = PhoneNumber.Create(phoneNumber),
+                Address = address,
+            };
 
             // raise: MemberCreatedDomainEvent(member.Id, insuranceFee)
             return member;

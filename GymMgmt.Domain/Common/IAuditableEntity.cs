@@ -30,5 +30,9 @@ namespace GymMgmt.Domain.Common
         /// Gets the user who last modified the entity.
         /// </summary>
         string? LastModifiedBy { get; }
+
+        void SetCreationInfo(DateTimeOffset dateTime, string? creator);
+
+        void SetModificationInfo(DateTimeOffset dateTime, string? modifier);
     }
 }

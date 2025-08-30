@@ -20,13 +20,13 @@ namespace GymMgmt.Domain.Common
 
 
         // Called by the interceptor — not meant for public use
-        internal void SetCreationInfo(DateTimeOffset created, string? createdBy)
+        public void SetCreationInfo(DateTimeOffset created, string? createdBy)
         {
             Created = created;
             CreatedBy = createdBy;
         }
 
-        internal void SetModificationInfo(DateTimeOffset modified, string? modifiedBy)
+        public void SetModificationInfo(DateTimeOffset modified, string? modifiedBy)
         {
             LastModified = modified;
             LastModifiedBy = modifiedBy;
