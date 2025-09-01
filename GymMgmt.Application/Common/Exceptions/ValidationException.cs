@@ -1,16 +1,17 @@
 ﻿using FluentValidation.Results;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace GymMgmt.Application.Common.Exceptions
 {
     public class ValidationException : ApplicationLayerException
     {
+        public IDictionary<string, string[]> Errors { get; }
         public ValidationException()
-            : base("One or more validation failures have occurred.")
+            : base(
+                  errorCode: "VALIDATION_FAILED",
+                  message: "One or more validation failures have occurred."
+                  )
+
         {
             Errors = new Dictionary<string, string[]>();
         }
@@ -22,7 +23,5 @@ namespace GymMgmt.Application.Common.Exceptions
                 .GroupBy(e => e.PropertyName, e => e.ErrorMessage)
                 .ToDictionary(failureGroup => failureGroup.Key, failureGroup => failureGroup.Distinct().ToArray());
         }
-
-        public IDictionary<string, string[]> Errors { get; }
     }
 }

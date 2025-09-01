@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace GymMgmt.Application.Common.Results
 {
-    public record SignInResult(bool Succeeded, string? UserId, IEnumerable<string> Errors);
+    public record LoginResult(bool Succeeded, string? UserId, IEnumerable<string> Errors);
 }

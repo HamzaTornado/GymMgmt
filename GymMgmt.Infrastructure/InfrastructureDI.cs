@@ -1,15 +1,16 @@
 ﻿using GymMgmt.Application.Common.Interfaces;
+using GymMgmt.Domain.Entities.Members;
 using GymMgmt.Infrastructure.Data;
+using GymMgmt.Infrastructure.Data.Members;
 using GymMgmt.Infrastructure.Exceptions;
+using GymMgmt.Infrastructure.Identity;
+using GymMgmt.Infrastructure.Identity.Models;
 using GymMgmt.Infrastructure.Interceptors;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace GymMgmt.Infrastructure
 {
@@ -41,6 +42,43 @@ namespace GymMgmt.Infrastructure
 
             // Register the IUnitOfWork interface
             services.AddScoped<IUnitOfWork>(provider => provider.GetRequiredService<GymDbContext>());
+
+            // Configure Identity to use the merged DbContext
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<GymDbContext>()
+                .AddDefaultTokenProviders();
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Password settings
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequiredUniqueChars = 1;
+
+                // Lockout settings
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
+
+                // User settings
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.User.RequireUniqueEmail = true;
+
+                // SignIn settings
+                options.SignIn.RequireConfirmedEmail = false;
+                options.SignIn.RequireConfirmedPhoneNumber = false;
+            });
+
+            services.AddSingleton<ICurrentUserService, CurrentUserService>();
+            services.AddTransient<IDateTimeService, DateTimeService>();
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IUserManager, UserManager>();
+
+            services.AddScoped<IMemberRepository,MemberRepository>();
+
 
 
             return services;

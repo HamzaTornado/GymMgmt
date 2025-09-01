@@ -8,18 +8,17 @@ namespace GymMgmt.Application.Common.Exceptions
 {
     public class ApplicationLayerException : Exception
     {
-        public ApplicationLayerException()
-        {
-        }
-
-        public ApplicationLayerException(string? message)
+        public string ErrorCode { get; }
+        public ApplicationLayerException(string errorCode, string message)
             : base(message)
         {
+            ErrorCode = errorCode ?? throw new ArgumentNullException(nameof(errorCode));
         }
 
-        public ApplicationLayerException(string? message, Exception? innerException)
+        public ApplicationLayerException(string errorCode, string message, Exception innerException)
             : base(message, innerException)
         {
+            ErrorCode = errorCode ?? throw new ArgumentNullException(nameof(errorCode));
         }
     }
 }
