@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace GymMgmt.Infrastructure.Data.Plans
 {
-    public class MemberShipPlanRepository(GymDbContext dbContext) : BaseRepository<MembershipPlan,MembershipPlanId>(dbContext), IAggregateRoot
+    public class MemberShipPlanRepository(GymDbContext dbContext) : BaseRepository<MembershipPlan,MembershipPlanId>(dbContext) ,IMemberShipPlanRepository
     {
     }
 }

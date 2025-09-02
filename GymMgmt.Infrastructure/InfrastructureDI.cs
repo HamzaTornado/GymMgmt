@@ -1,7 +1,11 @@
 ﻿using GymMgmt.Application.Common.Interfaces;
+using GymMgmt.Domain.Entities.ClubSettingsConfig;
 using GymMgmt.Domain.Entities.Members;
+using GymMgmt.Domain.Entities.Plans;
 using GymMgmt.Infrastructure.Data;
+using GymMgmt.Infrastructure.Data.ClubSettingsConfig;
 using GymMgmt.Infrastructure.Data.Members;
+using GymMgmt.Infrastructure.Data.Plans;
 using GymMgmt.Infrastructure.Exceptions;
 using GymMgmt.Infrastructure.Identity;
 using GymMgmt.Infrastructure.Identity.Models;
@@ -14,9 +18,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace GymMgmt.Infrastructure
 {
-    internal static class InfrastructureDI
+    public static class InfrastructureDI
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services, string connectionString, bool isEnvironment)
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, string connectionString)
         {
             
             if (string.IsNullOrEmpty(connectionString)) 
@@ -26,17 +30,13 @@ namespace GymMgmt.Infrastructure
             services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
 
             // Register the DbContext with interceptors
-            services.AddDbContext<GymDbContext>((sp, options) =>
+            services.AddDbContext<GymDbContext>((serviceProvider, options) =>
             {
-                options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
+                options.UseSqlServer(connectionString, sqlOptions =>
+                    sqlOptions.MigrationsAssembly(typeof(GymDbContext).Assembly.FullName));
 
-                options.UseSqlServer(
-                    connectionString,
-                    sqloptions => sqloptions.MigrationsAssembly(typeof(GymDbContext).Assembly.FullName)
-                );
-
-                // Apply interceptors from service provider
-                var interceptors = sp.GetServices<ISaveChangesInterceptor>().ToArray();
+                // Apply interceptors
+                var interceptors = serviceProvider.GetServices<ISaveChangesInterceptor>();
                 options.AddInterceptors(interceptors);
             });
 
@@ -72,14 +72,15 @@ namespace GymMgmt.Infrastructure
                 options.SignIn.RequireConfirmedPhoneNumber = false;
             });
 
-            services.AddSingleton<ICurrentUserService, CurrentUserService>();
+            //Identity services
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddTransient<IDateTimeService, DateTimeService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IUserManager, UserManager>();
-
+            // Repositories
             services.AddScoped<IMemberRepository,MemberRepository>();
-
-
+            services.AddScoped<IClubSettingsRepository,ClubSettingsRepository>();
+            services.AddScoped<IMemberShipPlanRepository, MemberShipPlanRepository>();
 
             return services;
         }
