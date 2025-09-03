@@ -28,17 +28,17 @@ namespace GymMgmt.Infrastructure.Identity
 
             return result.Succeeded;
         }
-        public async Task<AppIdentityResult> CreateUserAsync(string firstName, string lastName, string password, string email, List<string> roles)
+        public async Task<AppIdentityResult> CreateUserAsync(CreateUserRequest request)
         {
             var user = new ApplicationUser
             {
-                UserName = email,
-                Email = email,
-                FirstName = firstName,
-                LastName = lastName
+                UserName = request.email,
+                Email = request.email,
+                FirstName = request.firstName,
+                LastName = request.lastName
             };
 
-            var result = await _userManager.CreateAsync(user, password);
+            var result = await _userManager.CreateAsync(user, request.password);
 
             if (!result.Succeeded)
             {
@@ -50,12 +50,12 @@ namespace GymMgmt.Infrastructure.Identity
                     })
                     );
             }
-            if (roles.Count <= 0)
+            if (request.roles.Count <= 0)
             {
-                roles.Add("User");
+                request.roles.Add("User");
             }
 
-            var addUserRole = await _userManager.AddToRolesAsync(user, roles);
+            var addUserRole = await _userManager.AddToRolesAsync(user, request.roles);
             if (!addUserRole.Succeeded)
             {
                 throw new IdentityValidationException(addUserRole.Errors.Select(e => new AppIdentityError
@@ -94,23 +94,33 @@ namespace GymMgmt.Infrastructure.Identity
             return await _userManager.FindByNameAsync(userName) == null;
         }
 
-        public async Task<AppIdentityResult> UpdateRefreshTokenAsync(string userName, RefreshTokenInfo tokenInfo)
+        public async Task<bool> UpdateRefreshTokenAsync(UpdateRefreshTokenRequest request)
         {
-            var user = await _userManager.FindByNameAsync(userName);
+            var user = await _userManager.FindByNameAsync(request.UserName);
             if (user == null)
             {
-                return AppIdentityResult.Failure();
+                throw new UserNotFoundException();
             }
             // hashing the refresh token before saving it
-            user.RefreshTokenHash = HashingService.Hash(tokenInfo.Token);
-            user.IsRefreshTokenRevoked = tokenInfo.IsRevoked;
-            user.RefreshTokenExpiryTime = tokenInfo.Expiry;
+            user.RefreshTokenHash = HashingService.Hash(request.Token);
+            user.IsRefreshTokenRevoked = false;
+            user.RefreshTokenExpiryTime = request.Expiry;
 
             var result = await _userManager.UpdateAsync(user);
-            return AppIdentityResult.Success();
+
+            if (result.Errors.Any())
+            {
+                throw new IdentityValidationException(result.Errors.Select(er =>
+                    new AppIdentityError
+                    {
+                        Code = er.Code,
+                        Description = er.Description
+                    }));
+            };
+            return result.Succeeded;
         }
 
-        public Task<UserIdResult> GetUserIdByRefreshTokenAsync(string refreshToken)
+        public Task<string> GetUserIdByRefreshTokenAsync(string refreshToken)
         {
             throw new NotImplementedException();
         }

@@ -1,0 +1,21 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace GymMgmt.Application.Common.Exceptions
+{
+    public class UnauthorizedException : ApplicationLayerException
+    {
+        public UnauthorizedException(string message = "Unauthorized access.")
+            : base("UNAUTHORIZED", message)
+        {
+        }
+
+        public UnauthorizedException(string message, Exception innerException)
+            : base("UNAUTHORIZED", message, innerException)
+        {
+        }
+    }
+}
