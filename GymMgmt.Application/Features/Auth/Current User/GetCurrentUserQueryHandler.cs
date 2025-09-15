@@ -1,12 +1,8 @@
 ﻿using GymMgmt.Application.Common.Interfaces;
 using GymMgmt.Application.Common.Models;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace GymMgmt.Application.Features.Auth.Current_User
 {

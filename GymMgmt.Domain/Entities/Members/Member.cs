@@ -46,7 +46,7 @@ namespace GymMgmt.Domain.Entities.Members
             HasPaidInsurance = false;
         }
 
-        public static Result<Member> Create(
+        public static Member Create(
             string firstName,
             string lastName,
             string phoneNumber,

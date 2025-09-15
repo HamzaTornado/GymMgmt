@@ -25,8 +25,8 @@ namespace GymMgmt.Domain.Tests.Subscriptions
             var memberResult = Member.Create(
                 "Hamza", "Zeroual", "0677740092", null, address);
 
-            Assert.True(memberResult.IsSuccess);
-            var mamber = memberResult.Value!;
+            Assert.True(memberResult != null);
+            var mamber = memberResult;
 
             var ex = Assert.Throws<InsuranceFeeNotPaidException>(() =>
             {
@@ -55,8 +55,8 @@ namespace GymMgmt.Domain.Tests.Subscriptions
                 email: null,
                 address: address);
 
-            Assert.True(memberResult.IsSuccess);
-            var member = memberResult.Value!;
+            Assert.True(memberResult != null);
+            var member = memberResult;
             member.MarkInsuranceAsPaid();
 
             // Act
@@ -84,7 +84,7 @@ namespace GymMgmt.Domain.Tests.Subscriptions
             var memberResult = Member.Create(
                 "Hamza", "Zeroual", "0677740092", null, address);
 
-            var member = memberResult.Value!;
+            var member = memberResult;
             member.MarkInsuranceAsPaid();
             member.StartSubscription(oneMonthPlan, insuranceFee,isInsuranceRequired:true,DateTime.Now); // First subscription
 

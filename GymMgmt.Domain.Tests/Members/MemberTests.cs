@@ -84,8 +84,8 @@ public class MemberTests
             "Hamza", "Zeroual", "0677740092", null, address);
 
         // Ensure member creation was successful before dereferencing  
-        Assert.True(memberResult.IsSuccess);
-        var member = memberResult.Value!;
+        Assert.True(memberResult!=null);
+        var member = memberResult;
 
         member.MarkInsuranceAsPaid();
 

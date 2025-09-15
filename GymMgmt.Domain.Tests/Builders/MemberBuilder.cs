@@ -38,11 +38,11 @@ namespace GymMgmt.Domain.Tests.Builders
         public Member Build()
         {
             var result = Member.Create(_firstName, _lastName, _phoneNumber, _email, _address);
-            if (!result.IsSuccess)
+            if (result==null)
             {
-                throw new InvalidOperationException("Failed to create Member: " + result.Error);
+                throw new InvalidOperationException("Failed to create Member: ");
             }
-            return result.Value!;
+            return result;
 
 
         }
