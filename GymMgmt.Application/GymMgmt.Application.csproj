@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Auth\Logout\" />
     <Folder Include="Features\Members\" />
   </ItemGroup>
 
