@@ -18,8 +18,4 @@
     <ProjectReference Include="..\GymMgmt.Domain\GymMgmt.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\Members\GetAllMembers\" />
-  </ItemGroup>
-
 </Project>
