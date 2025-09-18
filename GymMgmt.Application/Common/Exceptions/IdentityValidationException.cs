@@ -1,13 +1,8 @@
 ﻿using FluentValidation.Results;
-using GymMgmt.Application.Common.Exceptions;
 using GymMgmt.Application.Common.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace GymMgmt.Application.Exceptions
+
+namespace GymMgmt.Application.Common.Exceptions
 {
     public class IdentityValidationException : ApplicationLayerException
     {

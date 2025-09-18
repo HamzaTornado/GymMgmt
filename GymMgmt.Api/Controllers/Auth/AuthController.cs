@@ -7,5 +7,6 @@ namespace GymMgmt.Api.Controllers.Auth
     [ApiController]
     public class AuthController : ControllerBase
     {
+
     }
 }

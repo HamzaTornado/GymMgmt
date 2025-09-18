@@ -34,3 +34,4 @@ namespace GymMgmt.Application.Common.Exceptions
             Key = key;
         }
     }
+}

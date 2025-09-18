@@ -19,7 +19,6 @@ namespace GymMgmt.Domain.Entities.Members
         public Address? Address { get; private set; }
         public bool HasPaidInsurance { get; private set; } = false;
 
-
         private readonly List<Subscription> _subscriptions = new();
         public IReadOnlyCollection<Subscription> Subscriptions => _subscriptions.AsReadOnly();
 
