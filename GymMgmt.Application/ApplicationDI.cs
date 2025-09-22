@@ -7,7 +7,7 @@ namespace GymMgmt.Application
 {
     public static class ApplicationDI
     {
-        public static IServiceCollection AddAplicationServices(this IServiceCollection services, Assembly assembly)
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services, Assembly assembly)
         {
             // Register FluentValidation validators  
             services.AddValidatorsFromAssembly(
@@ -25,6 +25,8 @@ namespace GymMgmt.Application
                 cfg.AddBehavior(typeof(ValidationBehavior<,>));       
                 cfg.AddBehavior(typeof(UnitOfWorkBehavior<,>));        
             });
+
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             return services;
         }

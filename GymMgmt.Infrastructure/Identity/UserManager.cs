@@ -1,11 +1,13 @@
-﻿using GymMgmt.Application.Common.Interfaces;
+﻿using GymMgmt.Application.Common.Exceptions;
+using GymMgmt.Application.Common.Interfaces;
 using GymMgmt.Application.Common.Models;
 using GymMgmt.Application.Common.Results;
-using GymMgmt.Application.Exceptions;
+using GymMgmt.Application.Features.Account.GetUser;
 using GymMgmt.Infrastructure.Exceptions;
 using GymMgmt.Infrastructure.Identity.Models;
 using GymMgmt.Infrastructure.Identity.Security;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace GymMgmt.Infrastructure.Identity
 {
@@ -32,13 +34,15 @@ namespace GymMgmt.Infrastructure.Identity
         {
             var user = new ApplicationUser
             {
-                UserName = request.email,
-                Email = request.email,
-                FirstName = request.firstName,
-                LastName = request.lastName
+                UserName = request.Email,
+                Email = request.Email,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                PhoneNumber = request.PhoneNumber,
+
             };
 
-            var result = await _userManager.CreateAsync(user, request.password);
+            var result = await _userManager.CreateAsync(user, request.Password);
 
             if (!result.Succeeded)
             {
@@ -50,12 +54,12 @@ namespace GymMgmt.Infrastructure.Identity
                     })
                     );
             }
-            if (request.roles.Count <= 0)
+            if (request.Roles.Count <= 0)
             {
-                request.roles.Add("User");
+                request.Roles.Add("User");
             }
 
-            var addUserRole = await _userManager.AddToRolesAsync(user, request.roles);
+            var addUserRole = await _userManager.AddToRolesAsync(user, request.Roles);
             if (!addUserRole.Succeeded)
             {
                 throw new IdentityValidationException(addUserRole.Errors.Select(e => new AppIdentityError
@@ -64,7 +68,59 @@ namespace GymMgmt.Infrastructure.Identity
                     Description = e.Description
                 }));
             }
-            return AppIdentityResult.Success();
+            return  AppIdentityResult.Success();
+        }
+        public async Task<ReadUserDto?> GetUserByIdAsync(string userId, CancellationToken cancellationToken = default)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user is null)
+                return null;
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return new ReadUserDto(
+                Id: user.Id,
+                FirstName: user.FirstName,
+                LastName: user.LastName,
+                PhoneNumber: user.PhoneNumber ?? string.Empty,
+                Email: user.Email ?? string.Empty,
+                Roles: roles.ToList()
+            );
+        }
+        public async Task<IEnumerable<ReadUserDto>> GetAllUsersAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var users = await _userManager.Users.ToListAsync(cancellationToken);
+
+                if (users.Count == 0)
+                {
+                    return Enumerable.Empty<ReadUserDto>();
+                }
+
+                var userDtoTasks = users.Select(async user =>
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var roles = await _userManager.GetRolesAsync(user);
+                    return new ReadUserDto(
+                        Id: user.Id,
+                        FirstName: user.FirstName,
+                        LastName: user.LastName,
+                        PhoneNumber: user.PhoneNumber ?? string.Empty,
+                        Email: user.Email ?? string.Empty,
+                        Roles: roles.ToList()
+                    );
+                });
+
+                return await Task.WhenAll(userDtoTasks);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            
+
         }
 
         public async Task<string?> GetUserIdAsync(string userName)

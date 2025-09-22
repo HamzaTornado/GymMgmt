@@ -77,6 +77,11 @@ namespace GymMgmt.Api.Middlewares
                         correlationId)
                 ),
 
+                ConflictException conflictEx => (
+                    StatusCodes.Status409Conflict,
+                    ApiResponse<object>.Conflict(conflictEx.Message, correlationId)
+                ),
+
                 UnauthorizedException unauthorizedException => (
                     StatusCodes.Status401Unauthorized,
                     ApiResponse<object>.Unauthorized(unauthorizedException.Message, correlationId)

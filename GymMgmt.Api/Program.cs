@@ -26,7 +26,7 @@ namespace GymMgmt.Api
 
             builder.Services.Configure<TokenOptions>(builder.Configuration.GetSection("JWT"));
 
-            builder.Services.AddAplicationServices(typeof(ApplicationDI).Assembly);
+            builder.Services.AddApplicationServices(typeof(ApplicationDI).Assembly);
             builder.Services.AddInfrastructure(defaultConnection);
 
             const string DefaultCorsPolicyName = "CorsPolicy";

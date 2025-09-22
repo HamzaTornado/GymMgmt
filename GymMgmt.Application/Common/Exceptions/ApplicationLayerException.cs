@@ -1,6 +1,4 @@
-﻿
-
-namespace GymMgmt.Application.Common.Exceptions
+﻿namespace GymMgmt.Application.Common.Exceptions
 {
     public class ApplicationLayerException : Exception
     {

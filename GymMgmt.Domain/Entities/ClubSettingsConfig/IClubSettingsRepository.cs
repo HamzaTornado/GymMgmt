@@ -9,5 +9,6 @@ namespace GymMgmt.Domain.Entities.ClubSettingsConfig
 {
     public interface IClubSettingsRepository : IBaseRepository<ClubSettings,ClubSettingsId>
     {
+        Task<ClubSettings?> GetSingleOrDefaultAsync(CancellationToken ct = default);
     }
 }

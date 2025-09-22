@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace GymMgmt.Application.Common.Models
 {
-    public record CreateUserRequest(string firstName, string lastName, string password, string email, List<string> roles);
+    public record CreateUserRequest(string FirstName, string LastName, string Password,string ConfirmPassword,string PhoneNumber, string Email, List<string> Roles);
 }
