@@ -18,7 +18,7 @@ namespace GymMgmt.Application.Features.Account.GetUser
         public async Task<ReadUserDto> Handle(GetUserByIdQuery requset,CancellationToken cancellationToken=default)
         {
 
-            var user= await _userManager.GetUserByIdAsync(requset.Id);
+            var user= await _userManager.GetUserByIdAsync(requset.Id,cancellationToken);
 
             if (user == null)
             {

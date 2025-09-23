@@ -7,6 +7,7 @@ using GymMgmt.Api.Middlewares.Exceptions;
 using GymMgmt.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
+using GymMgmt.Api.Middlewares;
 
 
 namespace GymMgmt.Api
@@ -24,8 +25,8 @@ namespace GymMgmt.Api
 
             // Add services to the container.
 
-            builder.Services.Configure<TokenOptions>(builder.Configuration.GetSection("JWT"));
-
+            builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JWT"));
+           
             builder.Services.AddApplicationServices(typeof(ApplicationDI).Assembly);
             builder.Services.AddInfrastructure(defaultConnection);
 
@@ -116,6 +117,7 @@ namespace GymMgmt.Api
             app.UseAuthorization();
             app.UseAuthorization();
 
+            app.UseExceptionsHandlingMiddleware();
             app.MapControllers();
 
             app.Run();

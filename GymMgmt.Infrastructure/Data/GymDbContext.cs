@@ -8,10 +8,8 @@ using System.Reflection;
 
 namespace GymMgmt.Infrastructure.Data
 {
-    public class GymDbContext : IdentityDbContext<ApplicationUser,IdentityRole,string> , IUnitOfWork
+    public class GymDbContext(DbContextOptions<GymDbContext> options) : IdentityDbContext<ApplicationUser,IdentityRole,string>(options) , IUnitOfWork
     {
-        public GymDbContext(DbContextOptions<GymDbContext> options):base(options) { }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

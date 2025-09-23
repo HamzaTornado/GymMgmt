@@ -24,7 +24,7 @@ namespace GymMgmt.Infrastructure
         {
             
             if (string.IsNullOrEmpty(connectionString)) 
-                throw new DatabaseConnectionException(nameof(connectionString));
+                throw new DatabaseConnectionException();
 
             // Add the interceptors
             services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();

@@ -484,3 +484,4 @@ $RECYCLE.BIN/
 *.swp
 /GymMgmt.Api/appsettings.Development.json
 /GymMgmt.Application/Common/Results/Result.cs
+/GymMgmt.Infrastructure/Data/DesignTimeDbContextFactory .cs

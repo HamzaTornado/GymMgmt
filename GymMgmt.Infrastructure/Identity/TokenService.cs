@@ -5,6 +5,7 @@ using GymMgmt.Infrastructure.Identity.Models;
 using GymMgmt.Infrastructure.Identity.Security;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -23,13 +24,13 @@ namespace GymMgmt.Infrastructure.Identity
         public TokenService(
             UserManager<ApplicationUser> userManager,
             ILogger<TokenService> logger,
-            JwtSettings jwtSettings,
+            IOptionsSnapshot<JwtSettings> jwtSettings,
             JwtSigningConfigurations signingConfigurations,
             IDateTimeService machineDateTimeService)
         {
             _userManager = userManager;
             _logger = logger;
-            _jwtSettings = jwtSettings;
+            _jwtSettings = jwtSettings.Value;
             _signingConfigurations = signingConfigurations;
             _machineDateTimeService = machineDateTimeService;
         }

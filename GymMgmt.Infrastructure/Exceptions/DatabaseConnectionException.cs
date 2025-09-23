@@ -13,13 +13,12 @@ namespace GymMgmt.Infrastructure.Exceptions
     {
         public string? ConnectionString { get; }
 
-        public DatabaseConnectionException(string connectionString, Exception? innerException = null)
+        public DatabaseConnectionException()
             : base(
                 errorCode: "DATABASE_CONNECTION_FAILED",
-                message: "Failed to establish database connection. Please check connection string and database availability.",
-                innerException: innerException )
+                message: "Failed to establish database connection. Please check connection string and database availability." )
         {
-            ConnectionString = connectionString;
+            
         }
 
         public DatabaseConnectionException(string message, string connectionString, Exception? innerException = null)

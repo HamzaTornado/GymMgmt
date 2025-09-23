@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using GymMgmt.Application.Behaviours;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -22,10 +23,11 @@ namespace GymMgmt.Application
                 cfg.RegisterServicesFromAssembly(assembly);
 
                 // Pipeline behaviors (order matters!)  
-                cfg.AddBehavior(typeof(ValidationBehavior<,>));       
-                cfg.AddBehavior(typeof(UnitOfWorkBehavior<,>));        
+                cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));       
+                cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkBehavior<,>));        
             });
 
+            
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             return services;

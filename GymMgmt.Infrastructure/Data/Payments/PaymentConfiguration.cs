@@ -25,28 +25,33 @@ namespace GymMgmt.Infrastructure.Data.Payments
                 .HasConversion(id => id.Value, value => PaymentId.FromValue(value))
                 .IsRequired();
 
-            // Member relationship
-            builder.Property(x => x.MemberId)
+            // --- Configure MemberId Property ---
+            builder.Property(p => p.MemberId)
                 .HasConversion(id => id.Value, value => MemberId.FromValue(value))
-                .HasColumnName("MemberId")
+                .HasColumnName("MemberId") // Explicitly map to column
                 .IsRequired();
 
-            builder.HasOne<Member>()
-                .WithMany()
-                .HasForeignKey(x => x.MemberId);
+            // --- Configure Member Relationship (PRIMARY RELATIONSHIP) ---
+            // This is the CRITICAL PART: Link the FK property and navigation property explicitly.
+            builder.HasOne(p => p.Member) 
+                .WithMany(m=>m.Payments) 
+                .HasForeignKey("MemberId") // IMPORTANT: Use the STRING NAME of the FK property
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // Subscription relationship (optional) 
+            // Subscription relationship
             builder.Property(x => x.SubscriptionId)
                 .HasConversion(
-                id => id != null ? id.Value : (Guid?)null,
-                value => value.HasValue ? SubscriptionId.FromValue(value.Value) : null)
+                    id => id != null ? id.Value : (Guid?)null,
+                    value => value.HasValue ? SubscriptionId.FromValue(value.Value) : null)
                 .HasColumnName("SubscriptionId")
                 .IsRequired(false);
 
             builder.HasOne<Subscription>()
                 .WithMany()
                 .HasForeignKey(x => x.SubscriptionId)
-                .IsRequired(false);
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.NoAction);
+
 
             // Payments Properties
             builder.Property(x=> x.Amount)

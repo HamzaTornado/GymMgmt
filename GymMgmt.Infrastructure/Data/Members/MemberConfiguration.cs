@@ -20,6 +20,11 @@ namespace GymMgmt.Infrastructure.Data.Members
             .HasConversion(id => id.Value, value => MemberId.FromValue(value))
             .IsRequired();
 
+            builder.HasMany(m => m.Payments)
+            .WithOne(p => p.Member)  // ← CRITICAL FIX  
+            .HasForeignKey(p => p.MemberId)
+            .OnDelete(DeleteBehavior.Cascade);
+
             // Map private properties
             builder.Property(m => m.FirstName)
                 .HasColumnName("FirstName")
