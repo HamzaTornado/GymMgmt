@@ -9,12 +9,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
 using GymMgmt.Api.Middlewares;
 
-
 namespace GymMgmt.Api
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             var appSettings = builder.Configuration.Get<AppSettings>();
@@ -105,7 +104,6 @@ namespace GymMgmt.Api
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -117,7 +115,14 @@ namespace GymMgmt.Api
             app.UseAuthorization();
             app.UseAuthorization();
 
+            
             app.UseExceptionsHandlingMiddleware();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var roleInitializer = scope.ServiceProvider.GetRequiredService<IRoleInitializer>();
+                await roleInitializer.InitializeAsync();
+            }
             app.MapControllers();
 
             app.Run();
