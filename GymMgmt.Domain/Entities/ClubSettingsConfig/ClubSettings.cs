@@ -29,14 +29,14 @@ namespace GymMgmt.Domain.Entities.ClubSettingsConfig
         /// </summary>
         public static ClubSettings Create(InsuranceFee initialInsuranceFee)
         {
-            if (initialInsuranceFee == null)
-                throw new InsuranceFeeRequiredException();
-
-            if (!initialInsuranceFee.IsActive)
-                throw new InactiveFeeCannotBeCurrentException();
+            if (initialInsuranceFee.Amount <= 0)
+            {
+                initialInsuranceFee = InsuranceFee.Default();
+            }
 
             return new ClubSettings
             {
+                Id = ClubSettingsId.New(),
                 CurrentInsuranceFee = initialInsuranceFee
             };
         }

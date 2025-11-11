@@ -72,7 +72,6 @@ namespace GymMgmt.Domain.Entities.Members
         // Update methods
         public void UpdateName(string firstName, string lastName)
         {
-
             FirstName = firstName.Trim();
             LastName = lastName.Trim();
         }
@@ -105,7 +104,8 @@ namespace GymMgmt.Domain.Entities.Members
             //AddDomainEvent(new InsuranceFeePaid(Id));
         }
 
-        public Subscription StartSubscription(MembershipPlan plan, 
+        public Subscription StartSubscription(
+            MembershipPlan plan,
             InsuranceFee insuranceFee, // ← from ClubSettings.CurrentInsuranceFee
             bool isInsuranceRequired, // Enforce insurance concept on the first subscription and adding later if the subscription expired by a year
             DateTime? startDate = null
@@ -114,27 +114,26 @@ namespace GymMgmt.Domain.Entities.Members
 
             startDate ??= DateTime.Now;
 
-            // Business rule 1: No overlapping active subscriptions
+            // Rule 1: no overlapping subscriptions (active during the same period)
             if (_subscriptions.Any(s => s.IsActiveOn(startDate.Value)))
             {
                 throw new OverlappingSubscriptionException();
             }
 
-            if (isInsuranceRequired && !HasPaidInsurance)
-                throw new InsuranceFeeNotPaidException(Id.Value);
-
-            // Allow renewal: only block if there's an *active* subscription
-            if (_subscriptions.Any(s => s.IsActiveOn(startDate.Value)))
+            // Rule 2: insurance must be valid if required
+            if (isInsuranceRequired && !IsInsuredOn(startDate.Value))
             {
-                throw new ActiveSubscriptionExistsException(Id.Value);
+                throw new InsuranceFeeNotPaidException(Id.Value);
             }
 
+            // Create the subscription
             var subscription = Subscription.Create(
                 SubscriptionId.New(),
                 startDate.Value,
                 plan);
 
             _subscriptions.Add(subscription);
+
             return subscription;
         }
 
@@ -155,11 +154,7 @@ namespace GymMgmt.Domain.Entities.Members
             active.Cancel();
         }
 
-        
-
-        // Add payment (called when insurance is paid)
         public Payment RecordInsurancePayment(
-            decimal amount,
             DateTime paymentDate,
             ClubSettings clubSettings,
             string? reference = null)
@@ -168,11 +163,13 @@ namespace GymMgmt.Domain.Entities.Members
             if (IsInsuredOn(paymentDate))
                 throw new InsuranceAlreadyActiveException(Id.Value,paymentDate);
 
+            MarkInsuranceAsPaid(); // to prevent the Payment object to be in the _payments collection in memory in case the same instance in the same unit of work raised saveChange 
+
             var validUntil = paymentDate.AddDays(clubSettings.InsuranceValidityInDays);
-            var payment = Payment.ForInsurance(
+            var payment = Payment.CreateForInsurance(
                 id: PaymentId.New(),
                 memberId: Id,
-                amount: amount,
+                amount: clubSettings.CurrentInsuranceFee.Amount,
                 paymentDate: paymentDate,
                 validFrom: paymentDate,
                 validUntil: validUntil,
@@ -180,7 +177,6 @@ namespace GymMgmt.Domain.Entities.Members
                 );
 
             _payments.Add(payment);
-            MarkInsuranceAsPaid(); // Already updates flag
 
             return payment;
         }
@@ -194,7 +190,7 @@ namespace GymMgmt.Domain.Entities.Members
             if (subscription.Status == SubscriptionStatus.Cancelled)
                 throw new NoActiveSubscriptionException(Id.Value,"Pay For");
 
-            var payment = Payment.ForSubscription(
+            var payment = Payment.CreateForSubscription(
                 id: PaymentId.New(),
                 memberId: Id,
                 amount: subscription.Price,

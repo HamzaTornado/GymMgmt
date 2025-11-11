@@ -109,13 +109,16 @@ namespace GymMgmt.Api
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseRouting();
             app.UseCors(DefaultCorsPolicyName);
 
             app.UseHttpsRedirection();
-            app.UseAuthorization();
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
-            
+
+
             app.UseExceptionsHandlingMiddleware();
 
             using (var scope = app.Services.CreateScope())

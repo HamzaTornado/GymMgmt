@@ -66,7 +66,7 @@ namespace GymMgmt.Domain.Entities.Payments
         /// <summary>
         /// Creates a payment for a subscription, with period snapshot.
         /// </summary>
-        public static Payment ForSubscription(
+        public static Payment CreateForSubscription(
             PaymentId id,
             MemberId memberId,
             decimal amount,
@@ -91,7 +91,7 @@ namespace GymMgmt.Domain.Entities.Payments
         /// <summary>
         /// Creates a payment for insurance (no subscription, but still has a "validity period")
         /// </summary>
-        public static Payment ForInsurance(
+        public static Payment CreateForInsurance(
             PaymentId id,
             MemberId memberId,
             decimal amount,

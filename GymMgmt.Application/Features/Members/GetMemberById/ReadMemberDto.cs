@@ -10,6 +10,7 @@ namespace GymMgmt.Application.Features.Members.GetMemberById
         public string? Email { get; set; }
         public string PhoneNumber { get; set; }
 
-        public AddressDto? AddressDto { get; set; }
+        public AddressDto? Address { get; set; }
+        public bool HasPaidInsurance { get; set; }
     }
 }

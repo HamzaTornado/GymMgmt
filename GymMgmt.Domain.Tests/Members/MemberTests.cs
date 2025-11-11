@@ -156,7 +156,7 @@ public class MemberTests
         var now = DateTime.Now;
         var member = builder.Build();
 
-        var payment = member.RecordInsurancePayment(insuranceFee.Amount,now,clubSettings,"CASH-01");
+        var payment = member.RecordInsurancePayment(now,clubSettings,"CASH-01");
 
         Assert.NotNull(payment);
         Assert.True(member.HasPaidInsurance);

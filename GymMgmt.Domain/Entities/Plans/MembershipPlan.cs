@@ -1,6 +1,4 @@
 ﻿using GymMgmt.Domain.Common;
-using GymMgmt.Domain.Exceptions;
-
 
 namespace GymMgmt.Domain.Entities.Plans
 {

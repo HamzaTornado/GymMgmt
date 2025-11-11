@@ -7,6 +7,6 @@ using System.Threading.Tasks;
 
 namespace GymMgmt.Application.Features.Members.GetMemberById
 {
-    public record GetMemberByIdQuery(Guid Id) : ICommand<ReadMemberDto>;
+    public record GetMemberByIdQuery(Guid Id) : IQuery<ReadMemberDto>;
 
 }

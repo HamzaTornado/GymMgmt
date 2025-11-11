@@ -16,21 +16,28 @@ namespace GymMgmt.Application.Features.ClubSetup
     public class ClubSettingsMapperProfile :Profile
     {
         public ClubSettingsMapperProfile() {
-            // For MemberId ↔ Guid conversion
+            
             CreateMap<ClubSettingsId, Guid>().ConvertUsing(src => src.Value);
             CreateMap<Guid, ClubSettingsId>().ConvertUsing(src => ClubSettingsId.FromValue(src));
 
-            // Address <-> AddressDto
+            
             CreateMap<InsuranceFee, InsuranceFeeDto>();
             CreateMap<InsuranceFeeDto, InsuranceFee>();
 
-            // Member -> ReadMemberDto
-            CreateMap<ClubSettings, ReadClubSettingsDto>()
-                .ForMember(dest => dest.InsuranceFeeDto, opt => opt.MapFrom(src => src.CurrentInsuranceFee));
 
-            // ReadMemberDto -> Member
+            CreateMap<ClubSettings, ReadClubSettingsDto>()
+            .ConstructUsing((src, context) => new ReadClubSettingsDto(
+                src.Id.Value,
+                context.Mapper.Map<InsuranceFeeDto>(src.CurrentInsuranceFee), 
+                src.AreNewMembersAllowed,
+                src.IsInsuranceFeeRequired,
+                src.SubscriptionGracePeriodInDays,
+                src.InsuranceValidityInDays
+            ));
+
+
             CreateMap<ReadClubSettingsDto, ClubSettings>()
-                .ForMember(dest => dest.CurrentInsuranceFee, opt => opt.MapFrom(src => src.InsuranceFeeDto));
+                .ForMember(dest => dest.CurrentInsuranceFee, opt => opt.MapFrom(src => src.InsuranceFee));
         }
     }
 }

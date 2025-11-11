@@ -1,5 +1,6 @@
 ﻿using AuthSystem.Application.Features.Memebers;
 using GymMgmt.Application.Common.Interfaces;
+using GymMgmt.Application.Features.Members.GetMemberById;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,6 @@ namespace GymMgmt.Application.Features.Members.CreateMember
         string LastName,
         string? Email,
         string PhoneNumber,
-        AddressDto? AddressDto
-        ):ICommand<Guid>;
+        AddressDto? Address
+        ):ICommand<ReadMemberDto>;
 }

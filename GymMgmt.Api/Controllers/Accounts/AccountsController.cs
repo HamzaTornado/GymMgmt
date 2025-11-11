@@ -11,11 +11,11 @@ namespace GymMgmt.Api.Controllers.Accounts
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountController : ControllerBase
+    public class AccountsController : ControllerBase
     {
         private readonly IMediator _mediator;
 
-        public AccountController(IMediator mediator)
+        public AccountsController(IMediator mediator)
         {
             _mediator = mediator;
         }
@@ -31,7 +31,7 @@ namespace GymMgmt.Api.Controllers.Accounts
             var result = await _mediator.Send(registerUserCommande);
 
 
-            return Ok(ApiResponse<RegistreResponse>.Success(result, "User Connected successful"));
+            return Ok(ApiResponse<RegistreResponse>.Success(result, "User Created successful"));
         }
 
     }

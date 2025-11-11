@@ -21,11 +21,11 @@ namespace GymMgmt.Application.Features.Members
 
             // Member -> ReadMemberDto
             CreateMap<Member, ReadMemberDto>()
-                .ForMember(dest => dest.AddressDto, opt => opt.MapFrom(src => src.Address));
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address));
 
             // ReadMemberDto -> Member
             CreateMap<ReadMemberDto, Member>()
-                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.AddressDto));
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address));
         }
     }
 }

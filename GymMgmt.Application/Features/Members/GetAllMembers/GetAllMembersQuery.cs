@@ -8,5 +8,5 @@ using System.Threading.Tasks;
 
 namespace GymMgmt.Application.Features.Members.GetAllMembers
 {
-    public sealed record GetAllMembersQuery:ICommand<IEnumerable<ReadMemberDto>>;
+    public sealed record GetAllMembersQuery():IQuery<IEnumerable<ReadMemberDto>>;
 }
