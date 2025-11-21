@@ -20,6 +20,7 @@ namespace GymMgmt.Domain.Entities.ClubSettingsConfig
         public bool IsInsuranceFeeRequired { get; private set; } = false;
         public int SubscriptionGracePeriodInDays { get; private set; } = 5;
         public int InsuranceValidityInDays { get; private set; } = 365;
+        public bool IsRefundAllowed { get; private set; } = false;
 
         // EF Core
         private ClubSettings() { }

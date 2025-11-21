@@ -25,7 +25,7 @@ namespace GymMgmt.Application.Features.ClubSetup.UpdateClubSettings
         }
         public async Task<ReadClubSettingsDto> Handle(UpdateClubSettingsCommand request, CancellationToken cancellationToken)
         {
-            var existingSettings = await _clubSettingsRepository.FindByIdAsync(request.ClubSettingsId, cancellationToken);
+            var existingSettings = await _clubSettingsRepository.FindByIdAsync(ClubSettingsId.FromValue(request.ClubSettingsId), cancellationToken);
 
             if (existingSettings == null) {
                 throw new NotFoundException();

@@ -29,7 +29,7 @@ namespace GymMgmt.Application.Features.Memberships.CreateMembership
             var membership = MembershipPlan.Create(
                     MembershipPlanId.New(),
                     command.Name,
-                    command.DurationInDays,
+                    command.DurationInMonths,
                     command.Price
                 );
 

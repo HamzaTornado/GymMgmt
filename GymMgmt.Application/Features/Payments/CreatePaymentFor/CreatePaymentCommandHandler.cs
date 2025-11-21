@@ -5,11 +5,6 @@ using GymMgmt.Domain.Entities.Members;
 using GymMgmt.Domain.Entities.Payments;
 using GymMgmt.Domain.Entities.Subsciptions;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GymMgmt.Application.Features.Payments.CreatePaymentFor
 {

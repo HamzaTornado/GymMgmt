@@ -12,7 +12,8 @@ namespace GymMgmt.Domain.Entities.Subsciptions
         public DateTime EndDate { get; private set; }
         public string PlanName { get; private set; } = string.Empty;
         public decimal Price { get; private set; }
-        public SubscriptionStatus Status { get; private set; } 
+        public SubscriptionStatus Status { get; private set; }
+        public bool WillNotRenew { get; private set; } = false;
 
         private Subscription() { }
 
@@ -35,35 +36,71 @@ namespace GymMgmt.Domain.Entities.Subsciptions
         DateTime startDate,
         MembershipPlan plan)
         {
-            var endDate = plan.CalculateEndDate(startDate);
+            // 1. Normalize start date: Nov 12, 2025 00:00:00
+            var normalizedStartDate = startDate.Date;
 
-            return new Subscription(id, startDate, endDate, plan);
+            // 2. Calculate provisional end date using plan: Dec 11, 2025 00:00:00
+            var provisionalEndDate = plan.CalculateEndDate(normalizedStartDate);
+
+            // 3. Normalize end date to the end of that day: Dec 11, 2025 23:59:59...
+            var normalizedEndDate = provisionalEndDate.Date.AddDays(1).AddTicks(-1);
+
+            return new Subscription(id, normalizedStartDate, normalizedEndDate, plan);
+
         }
         public void Activate()
         {
             if (Status == SubscriptionStatus.Active)
                 throw new SubscriptionAlreadyActiveException(Id.Value);
 
+            if (EndDate < DateTime.Today)
+                throw new SubscriptionExpiredException(Id.Value);
+
             Status = SubscriptionStatus.Active;
         }
-        public void Cancel()
+        public void Revoke()
         {
             if (Status != SubscriptionStatus.Active)
-                throw new NoActiveSubscriptionException(Id.Value,"cancel");
+                throw new NoActiveSubscriptionException(Id.Value, "revoke");
 
             Status = SubscriptionStatus.Cancelled;
+
         }
 
-        public void Extend(MembershipPlan extensionPlan)
+        public (DateTime NewPeriodStart, DateTime NewPeriodEnd) Extend(MembershipPlan extensionPlan)
         {
             if (Status != SubscriptionStatus.Active)
                 throw new NoActiveSubscriptionException(Id.Value, "extend");
 
-            EndDate = extensionPlan.CalculateEndDate(EndDate);
+            var extensionStartDate = this.EndDate.Date.AddDays(1);
+            var provisionalNewEndDate = extensionPlan.CalculateEndDate(extensionStartDate);
+            var normalizedNewEndDate = provisionalNewEndDate.Date.AddDays(1).AddTicks(-1);
+
+            // Set the new EndDate
+            EndDate = normalizedNewEndDate;
             Price = extensionPlan.Price;
             PlanName = $"Extended: {extensionPlan.Name}";
-        }
 
+            // Return the period we just calculated
+            return (extensionStartDate, normalizedNewEndDate);
+        }
+        public void CancelAtPeriodEnd()
+        {
+            if (Status != SubscriptionStatus.Active)
+                throw new NoActiveSubscriptionException(Id.Value, "cancel at end of period");
+
+            WillNotRenew = true;
+        }
+        /// <summary>
+        /// Re-enables renewal for a subscription that was "soft cancelled".
+        /// </summary>
+        public void EnableRenewal()
+        {
+            if (!WillNotRenew)
+                throw new SubscriptionRenewalAlreadyEnabledException(Id.Value);
+
+            WillNotRenew = false;
+        }
         public bool IsActiveOn(DateTime date) =>
             Status == SubscriptionStatus.Active &&
             StartDate <= date &&

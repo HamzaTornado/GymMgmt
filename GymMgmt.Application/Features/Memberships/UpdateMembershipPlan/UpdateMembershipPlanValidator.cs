@@ -18,7 +18,7 @@ namespace GymMgmt.Application.Features.Memberships.UpdateMembershipPlan
             RuleFor(p => p.Name)
                .NotEmpty().WithMessage("Name is Required");
 
-            RuleFor(p => p.DurationInDays)
+            RuleFor(p => p.DurationInMonths)
                 .NotEmpty().WithMessage("Duration is required")
                 .GreaterThan(0).WithMessage("Duration must be Valid");
 

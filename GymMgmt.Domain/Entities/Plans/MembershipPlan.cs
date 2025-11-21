@@ -9,7 +9,7 @@ namespace GymMgmt.Domain.Entities.Plans
     public class MembershipPlan : AuditableEntity<MembershipPlanId>, IAggregateRoot
     {
         public string Name { get; private set; } = string.Empty;
-        public int DurationInDays { get; private set; }
+        public int DurationInMonths { get; private set; }
         public decimal Price { get; private set; }
         public bool IsActive { get; private set; } = true;
 
@@ -19,30 +19,30 @@ namespace GymMgmt.Domain.Entities.Plans
         private MembershipPlan(
             MembershipPlanId id,
             string name,
-            int durationInDays,
+            int durationInMonths,
             decimal price)
         {
             Id = id;
             Name = name;
-            DurationInDays = durationInDays;
+            DurationInMonths = durationInMonths;
             Price = price;
         }
 
         public static MembershipPlan Create(
                 MembershipPlanId id,
                 string name,
-                int durationInDays,
+                int durationInMonths,
                 decimal price)
         {
 
-            return new MembershipPlan(id, name, durationInDays, price);
+            return new MembershipPlan(id, name, durationInMonths, price);
         }
 
-        public void Update(string name, int durationInDays, decimal price)
+        public void Update(string name, int durationInMonths, decimal price)
         {
 
             Name = name;
-            DurationInDays = durationInDays;
+            DurationInMonths = durationInMonths;
             Price = price;
         }
 
@@ -50,8 +50,8 @@ namespace GymMgmt.Domain.Entities.Plans
         public void Deactivate() => IsActive = false;
 
         public DateTime CalculateEndDate(DateTime startDate) =>
-            startDate.AddDays(DurationInDays);
+             startDate.AddMonths(DurationInMonths).AddDays(-1);
 
-        public override string ToString() => $"{Name} ({DurationInDays} days)";
+        public override string ToString() => $"{Name} ({DurationInMonths } Month(s))";
     }
 }

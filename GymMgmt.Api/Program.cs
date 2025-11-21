@@ -111,15 +111,15 @@ namespace GymMgmt.Api
             }
             app.UseRouting();
             app.UseCors(DefaultCorsPolicyName);
+            
 
+            app.UseExceptionsHandlingMiddleware();
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseAuthorization();
 
 
-
-            app.UseExceptionsHandlingMiddleware();
 
             using (var scope = app.Services.CreateScope())
             {

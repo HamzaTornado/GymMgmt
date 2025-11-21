@@ -20,9 +20,6 @@
 
   <ItemGroup>
     <Folder Include="Features\Account\UpdateUser\" />
-    <Folder Include="Features\Subscriptions\CreateSubscription\" />
-    <Folder Include="Features\Subscriptions\ExtendSubscription\" />
-    <Folder Include="Features\Subscriptions\CancelSubscription\" />
   </ItemGroup>
 
 </Project>

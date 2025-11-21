@@ -12,7 +12,7 @@ namespace GymMgmt.Application.Features.Members.UpdateMember
     {
         public UpdateMemberValidator() {
 
-            RuleFor(x=>x.memberId)
+            RuleFor(x=>x.MemberId)
                 .NotEmpty().WithMessage("ID is required.");
 
             RuleFor(x => x.FirstName)

@@ -29,7 +29,14 @@ namespace GymMgmt.Application.Features.Memberships.UpdateMembershipPlan
             var membership = await _memberShipPlanRepository.FindByIdAsync(MembershipPlanId.FromValue(command.Id), ct)
                 ?? throw new NotFoundException();
 
-            membership.Update(command.Name, command.DurationInDays, command.Price);
+            membership.Update(command.Name, command.DurationInMonths, command.Price);
+            if (membership.IsActive && !command.IsActive ) {
+                membership.Deactivate();
+            }
+            if (!membership.IsActive && command.IsActive)
+            {
+                membership.Activate();
+            }
 
             return _mapper.Map<ReadMemberShipPlanDto>(membership);
         }

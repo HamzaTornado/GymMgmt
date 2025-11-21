@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using GymMgmt.Application.Common.Exceptions;
 using GymMgmt.Application.Features.Members.GetMemberById;
+using GymMgmt.Domain.Common.ValueObjects;
 using GymMgmt.Domain.Entities.Members;
 using MediatR;
 using System;
@@ -24,15 +25,15 @@ namespace GymMgmt.Application.Features.Members.UpdateMember
         }
         public async Task<ReadMemberDto> Handle(UpdateMemberCommand request, CancellationToken cancellationToken)
         {
-            var memberid = MemberId.FromValue(request.memberId);
+            var memberid = MemberId.FromValue(request.MemberId);
 
             var member = await _memberRepository.FindByIdAsync(memberid, cancellationToken)
                     ?? throw new NotFoundException(nameof(Member), memberid);
 
             member.UpdateName(request.FirstName, request.LastName);
             member.UpdatePhoneNumber(request.PhoneNumber);
-            member.UpdateAddress(member.Address);
-            member.UpdateEmail(member.Email);
+            member.UpdateAddress(_mapper.Map<Address>(request.AddressDto));
+            member.UpdateEmail(request.Email);
 
             return _mapper.Map<ReadMemberDto>(member);
         }

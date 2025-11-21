@@ -132,7 +132,7 @@ public class MemberTests
 
         member.MarkInsuranceAsPaid();
         var subscription = member.StartSubscription(oneMonthPlan, insuranceFee, isInsuranceRequired: true, now); 
-        subscription.Cancel();
+        subscription.Revoke();
 
         var ex = Assert.Throws<NoActiveSubscriptionException>(() =>
         {
@@ -184,7 +184,7 @@ public class MemberTests
 
         var subscription = member.StartSubscription(oneMonthPlan, insuranceFee,clubSettings.IsInsuranceFeeRequired);
 
-        var payment = member.RecordSubscriptionPayment(subscription, now, "CASH-Sub-01");
+        var payment = member.RecordSubscriptionPayment(subscription, now, subscription.StartDate, subscription.EndDate, "CASH-Sub-01");
 
         Assert.NotNull(payment);
         Assert.True(payment.IsSuccessful);
@@ -193,7 +193,7 @@ public class MemberTests
         Assert.NotNull(payment.SubscriptionId);
         Assert.Equal(subscription.StartDate,payment.PeriodStart);
         Assert.Equal(subscription.EndDate, payment.PeriodEnd);
-        Assert.Equal(payment.PeriodStart.AddDays(oneMonthPlan.DurationInDays),payment.PeriodEnd);
+        Assert.Equal(payment.PeriodStart.AddDays(oneMonthPlan.DurationInMonths),payment.PeriodEnd);
     }
 
 

@@ -12,7 +12,7 @@ namespace GymMgmt.Application.Features.Memberships.UpdateMembershipPlan
     public sealed record UpdateMemberShipPlanCommand(
         Guid Id,
         string Name,
-        int DurationInDays,
+        int DurationInMonths,
         decimal Price,
         bool IsActive
         ) :ICommand<ReadMemberShipPlanDto>;

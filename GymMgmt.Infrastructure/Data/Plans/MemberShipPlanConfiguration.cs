@@ -32,8 +32,8 @@ namespace GymMgmt.Infrastructure.Data.Plans
                 .HasDefaultValue(true)
                 .IsRequired();
 
-            builder.Property(x=>x.DurationInDays)
-                .HasColumnName("DurationInDays")
+            builder.Property(x=>x.DurationInMonths)
+                .HasColumnName("DurationInMonths")
                 .HasColumnType("integer")
                 .IsRequired();
 

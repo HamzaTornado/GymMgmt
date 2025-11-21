@@ -11,6 +11,7 @@ namespace GymMgmt.Api.Controllers.ClubSettings
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class ClubSettingsController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -19,7 +20,7 @@ namespace GymMgmt.Api.Controllers.ClubSettings
             _mediator = mediator;
         }
 
-        [AllowAnonymous]
+        
         [HttpPost("AddClubSettings")]
         [ProducesResponseType(typeof(ApiResponse<ReadClubSettingsDto>), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), (int)HttpStatusCode.BadRequest)]
@@ -33,7 +34,6 @@ namespace GymMgmt.Api.Controllers.ClubSettings
         }
 
         [HttpGet("GetClubSetting")]
-        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<ReadClubSettingsDto>), (int)HttpStatusCode.OK)]
@@ -45,7 +45,6 @@ namespace GymMgmt.Api.Controllers.ClubSettings
 
             return Ok(ApiResponse<ReadClubSettingsDto>.Success(result));
         }
-        [AllowAnonymous]
         [HttpPut("UpdateClubSetting")]
         [ProducesResponseType(typeof(ApiResponse<ReadClubSettingsDto>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), (int)HttpStatusCode.NotFound)]

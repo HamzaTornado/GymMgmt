@@ -5,7 +5,7 @@ namespace GymMgmt.Application.Features.Memberships.CreateMembership
 {
     public sealed record CreateMemberShipPlanCommand(
         string Name,
-        int DurationInDays,
+        int DurationInMonths,
         decimal Price,
         bool IsActive
         ):ICommand<ReadMemberShipPlanDto>;

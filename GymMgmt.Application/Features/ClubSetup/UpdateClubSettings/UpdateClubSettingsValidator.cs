@@ -32,9 +32,9 @@ namespace GymMgmt.Application.Features.ClubSetup.UpdateClubSettings
                 .WithMessage("Subscription Grace Period must be positive");
 
         }
-        private async Task<bool> ExistAsync(ClubSettingsId clubSettingsId, CancellationToken cancellationToken)
+        private async Task<bool> ExistAsync(Guid clubSettingsId, CancellationToken cancellationToken)
         {
-            var exists = await _repository.FindByIdAsync( clubSettingsId,cancellationToken);
+            var exists = await _repository.FindByIdAsync(ClubSettingsId.FromValue(clubSettingsId),cancellationToken);
             return exists !=null ;
         }
     }

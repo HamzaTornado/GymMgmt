@@ -147,14 +147,16 @@ namespace GymMgmt.Infrastructure.Identity
             return true;
         }
 
-        private static IEnumerable<Claim> GetClaims(ApplicationUser user, IList<string> roles)
+        private IEnumerable<Claim> GetClaims(ApplicationUser user, IList<string> roles)
         {
             var claims = new List<Claim> {
-                new(ClaimTypes.Name, user.UserName ?? string.Empty),
-                new(JwtRegisteredClaimNames.Sub, user.Id),
-                new(JwtRegisteredClaimNames.Email, user.Email ?? user.UserName ?? string.Empty), // Email might be more appropriate
-                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            };
+        new(ClaimTypes.Name, user.UserName ?? string.Empty),
+        new(JwtRegisteredClaimNames.Sub, user.Id),
+        new(JwtRegisteredClaimNames.Email, user.Email ?? user.UserName ?? string.Empty),
+        new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        new(JwtRegisteredClaimNames.Iss, _jwtSettings.Issuer)
+        // REMOVE this line: new(JwtRegisteredClaimNames.Aud, _jwtSettings.Audience)
+    };
 
             foreach (var role in roles)
             {
@@ -177,7 +179,7 @@ namespace GymMgmt.Infrastructure.Identity
                 _logger.LogWarning("Attempted to parse an empty or null access token.");
                 throw new InvalidTokenException(message:"Access token is missing or empty.");
             }
-
+           
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var tokenValidationParameters = new TokenValidationParameters
@@ -234,13 +236,13 @@ namespace GymMgmt.Infrastructure.Identity
         private string GetAccessToken(IEnumerable<Claim> claims)
         {
             var securityToken = new JwtSecurityToken(
-                    issuer: _jwtSettings.Issuer,
-                    audience: _jwtSettings.Audience,
-                    claims: claims,
-                    expires: DateTime.UtcNow.AddMinutes(_jwtSettings.TokenValidityInMinutes),
-                    notBefore: DateTime.UtcNow,
-                    signingCredentials: _signingConfigurations.SigningCredentials
-                );
+                issuer: _jwtSettings.Issuer,
+                audience: _jwtSettings.Audience, // This will properly set the 'aud' claim
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.TokenValidityInMinutes),
+                notBefore: DateTime.UtcNow,
+                signingCredentials: _signingConfigurations.SigningCredentials
+            );
 
             var tokenHandler = new JwtSecurityTokenHandler();
             return tokenHandler.WriteToken(securityToken);

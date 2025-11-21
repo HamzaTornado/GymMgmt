@@ -3,6 +3,8 @@ using GymMgmt.Application.Features.Members.CreateMember;
 using GymMgmt.Application.Features.Members.GetAllMembers;
 using GymMgmt.Application.Features.Members.GetMemberById;
 using GymMgmt.Application.Features.Members.PayInsurrance;
+using GymMgmt.Application.Features.Members.UpdateMember;
+using GymMgmt.Application.Features.Memberships.UpdateMembershipPlan;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -55,6 +57,20 @@ namespace GymMgmt.Api.Controllers.Members
         {
             var result = await _mediator.Send(new GetAllMembersQuery());
             return Ok(ApiResponse<IEnumerable<ReadMemberDto>>.Success(result));
+        }
+
+        [AllowAnonymous]
+        [HttpPut("{id:Guid}")]
+        [ProducesResponseType(typeof(ApiResponse<ReadMemberDto>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), (int)HttpStatusCode.BadRequest)]
+        public async Task<ActionResult> UpdateMember(Guid id,UpdateMemberCommand updateMemberCommand)
+        {
+            if (updateMemberCommand.MemberId != id)
+            {
+                return BadRequest(ApiResponse<object>.Fail("Route ID and body ID mismatch"));
+            }
+            var result = await _mediator.Send(updateMemberCommand);
+            return Ok(ApiResponse<ReadMemberDto>.Success(result));
         }
 
         [AllowAnonymous]

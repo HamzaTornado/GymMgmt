@@ -6,7 +6,7 @@ using GymMgmt.Domain.Entities.ClubSettingsConfig;
 namespace GymMgmt.Application.Features.ClubSetup.UpdateClubSettings
 {
     public sealed record UpdateClubSettingsCommand(
-        ClubSettingsId ClubSettingsId,
+        Guid ClubSettingsId,
         decimal InsurranceFeeAmount,
         bool AreNewMembersAllowed,
         bool IsInsuranceFeeRequired,
