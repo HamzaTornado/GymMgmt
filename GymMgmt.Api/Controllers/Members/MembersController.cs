@@ -29,7 +29,7 @@ namespace GymMgmt.Api.Controllers.Members
             _mediator = mediator;
         }
 
-        [AllowAnonymous]
+         
         [HttpPost("AddMember")]
         [ProducesResponseType(typeof(ApiResponse<ReadMemberDto>), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), (int)HttpStatusCode.BadRequest)]
@@ -42,7 +42,7 @@ namespace GymMgmt.Api.Controllers.Members
             return Ok(ApiResponse<ReadMemberDto>.Success(result, "Member  added successful"));
         }
 
-        [AllowAnonymous]
+         
         [HttpGet("{id:Guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -55,7 +55,7 @@ namespace GymMgmt.Api.Controllers.Members
             return Ok(ApiResponse<ReadMemberDto>.Success(result));
         }
 
-        [AllowAnonymous]
+         
         [HttpGet]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<ReadMemberDto>>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), (int)HttpStatusCode.BadRequest)]
@@ -66,7 +66,7 @@ namespace GymMgmt.Api.Controllers.Members
         }
        
 
-        [AllowAnonymous]
+         
         [HttpGet("Memberslist/{filter}")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedList<MemberListDto>>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), (int)HttpStatusCode.BadRequest)]
@@ -80,7 +80,7 @@ namespace GymMgmt.Api.Controllers.Members
             return Ok(ApiResponse<PaginatedList<MemberListDto>>.Success(result));
         }
 
-        [AllowAnonymous]
+         
         [HttpPut("{id:Guid}")]
         [ProducesResponseType(typeof(ApiResponse<ReadMemberDto>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), (int)HttpStatusCode.BadRequest)]
@@ -94,7 +94,7 @@ namespace GymMgmt.Api.Controllers.Members
             return Ok(ApiResponse<ReadMemberDto>.Success(result));
         }
 
-        [AllowAnonymous]
+         
         [HttpPost("PayInsurance")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<bool>), (int)HttpStatusCode.OK)]

@@ -11,6 +11,7 @@ using System.Net;
 namespace GymMgmt.Api.Controllers.MemberShipsPlans
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     [ApiController]
     public class MemberShipsPlansController : ControllerBase
     {
@@ -21,7 +22,7 @@ namespace GymMgmt.Api.Controllers.MemberShipsPlans
             _mediator = mediator;
         }
 
-        [AllowAnonymous]
+         
         [HttpPost("AddMemberShipPlan")]
         [ProducesResponseType(typeof(ApiResponse<ReadMemberShipPlanDto>), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), (int)HttpStatusCode.BadRequest)]
@@ -34,7 +35,7 @@ namespace GymMgmt.Api.Controllers.MemberShipsPlans
             return Ok(ApiResponse<ReadMemberShipPlanDto>.Success(result, "MemberShip Plan  added successful"));
         }
 
-        [AllowAnonymous]
+         
         [HttpGet("{id:Guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -47,7 +48,7 @@ namespace GymMgmt.Api.Controllers.MemberShipsPlans
             return Ok(ApiResponse<ReadMemberShipPlanDto>.Success(result));
         }
 
-        [AllowAnonymous]
+         
         [HttpGet]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<ReadMemberShipPlanDto>>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), (int)HttpStatusCode.BadRequest)]
@@ -58,7 +59,7 @@ namespace GymMgmt.Api.Controllers.MemberShipsPlans
         }
 
 
-        [AllowAnonymous]
+         
         [HttpPut("{id:Guid}")]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<ReadMemberShipPlanDto>>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), (int)HttpStatusCode.BadRequest)]

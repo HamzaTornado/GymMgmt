@@ -22,7 +22,7 @@ namespace GymMgmt.Api.Controllers.Subscriptions
             _mediator = mediator;
         }
 
-        [AllowAnonymous] // TODO: Secure this endpoint
+
         [HttpPost("Start")]
         [ProducesResponseType(typeof(ApiResponse<Guid>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), (int)HttpStatusCode.BadRequest)]
@@ -32,7 +32,7 @@ namespace GymMgmt.Api.Controllers.Subscriptions
             return Ok(ApiResponse<Guid>.Success(result, "Subscription started successfully"));
         }
 
-        [AllowAnonymous] // TODO: Secure this endpoint
+
         [HttpPost("Extend")]
         [ProducesResponseType(typeof(ApiResponse<bool>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), (int)HttpStatusCode.BadRequest)]
@@ -42,7 +42,7 @@ namespace GymMgmt.Api.Controllers.Subscriptions
             return Ok(ApiResponse<bool>.Success(result, "Subscription extended successfully"));
         }
 
-        [AllowAnonymous] // TODO: Secure this endpoint
+
         [HttpPost("Cancel")]
         [ProducesResponseType(typeof(ApiResponse<bool>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), (int)HttpStatusCode.BadRequest)]
@@ -55,7 +55,7 @@ namespace GymMgmt.Api.Controllers.Subscriptions
         /// Gets a paginated list of subscriptions with filtering and sorting.
         /// </summary>
         /// 
-        [AllowAnonymous]
+         
         [HttpGet("GetSubscriptions")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedList<SubscriptionDto>>), StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse<PaginatedList<SubscriptionDto>>>> GetSubscriptions(

@@ -1,5 +1,6 @@
 ﻿using GymMgmt.Domain.Common.Enums;
 using GymMgmt.Domain.Common.ValueObjects;
+using GymMgmt.Domain.Entities.ClubSettingsConfig;
 using GymMgmt.Domain.Entities.Members;
 using GymMgmt.Domain.Entities.Plans;
 using GymMgmt.Domain.Exceptions;
@@ -44,7 +45,7 @@ namespace GymMgmt.Domain.Tests.Subscriptions
             var oneMonthPlan = MembershipPlan.Create(
                 MembershipPlanId.New(),
                 "1 Month",
-                30,
+                1,
                 200m);
 
             var address = new Address("123 Rue Atlas", "Fès", "Fès-Meknes", "30000");
@@ -60,7 +61,7 @@ namespace GymMgmt.Domain.Tests.Subscriptions
             member.MarkInsuranceAsPaid();
 
             // Act
-            var subscription = member.StartSubscription(oneMonthPlan, insuranceFee, true, DateTime.Now);
+            var subscription = member.StartSubscription(oneMonthPlan, insuranceFee, false, DateTime.Now);
 
             // Assert
             Assert.NotNull(subscription);
@@ -77,15 +78,16 @@ namespace GymMgmt.Domain.Tests.Subscriptions
             var oneMonthPlan = MembershipPlan.Create(
                 MembershipPlanId.New(),
                 "1 Month",
-                30,
+                1,
                 200m);
-
+            var clubsettings = ClubSettings.Create(insuranceFee);
             var address = new Address("123 Rue Atlas", "Fès", "Fès-Meknes", "30000");
             var memberResult = Member.Create(
                 "Hamza", "Zeroual", "0677740092", null, address);
 
             var member = memberResult;
-            member.MarkInsuranceAsPaid();
+            member.RecordInsurancePayment(DateTime.Now, clubsettings, "cash09");
+
             member.StartSubscription(oneMonthPlan, insuranceFee,isInsuranceRequired:true,DateTime.Now); // First subscription
 
             // Act & Assert

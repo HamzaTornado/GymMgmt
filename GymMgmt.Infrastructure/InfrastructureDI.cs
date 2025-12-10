@@ -87,7 +87,8 @@ namespace GymMgmt.Infrastructure
             services.AddTransient<IDateTimeService, DateTimeService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IUserManager, UserManager>();
-            services.AddScoped<IRoleInitializer, RoleInitializer>();
+            services.AddTransient<IRoleInitializer, RoleInitializer>();
+            services.AddTransient<IAdminSeeder, AdminSeeder>();
             // Repositories
             services.AddScoped<IMemberRepository,MemberRepository>();
             services.AddScoped<IClubSettingsRepository,ClubSettingsRepository>();

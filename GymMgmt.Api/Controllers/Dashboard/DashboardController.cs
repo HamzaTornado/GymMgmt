@@ -20,7 +20,6 @@ namespace GymMgmt.Api.Controllers.Dashboard
             _mediator = mediator;
         }
 
-        [AllowAnonymous]
         [HttpGet("Stats")]
         [ProducesResponseType(typeof(ApiResponse<MemberStatisticsDto>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), (int)HttpStatusCode.BadRequest)]

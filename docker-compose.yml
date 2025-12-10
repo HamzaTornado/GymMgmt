@@ -1,0 +1,38 @@
+services:
+  # 1. Your .NET Web API
+  gym-api:
+    image: gym-mgmt-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # REMOVED: ports: - "8080:8080"  <-- We don't expose this to the public internet anymore
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=gym-db;Database=GymMasterDb;User Id=sa;Password=YourStrong!Password123;TrustServerCertificate=True;
+    depends_on:
+      - gym-db
+    restart: always
+
+  # 2. SQL Server Database
+  gym-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong!Password123
+    volumes:
+      - sql_data:/var/opt/mssql
+    restart: always
+
+  # 3. Nginx Reverse Proxy (NEW)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"  # Opens Port 80 on the VPS
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - gym-api
+    restart: always
+
+volumes:
+  sql_data:

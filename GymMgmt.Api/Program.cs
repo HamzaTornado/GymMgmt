@@ -1,14 +1,14 @@
-
-using Microsoft.AspNetCore.Identity;
 using GymMgmt.Application;
 using GymMgmt.Infrastructure;
-using GymMgmt.Infrastructure.Exceptions;
 using GymMgmt.Api.Middlewares.Exceptions;
 using GymMgmt.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.OpenApi.Models;
 using GymMgmt.Api.Middlewares;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.HttpOverrides;
+using GymMgmt.Api.Extensions;
+using GymMgmt.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace GymMgmt.Api
 {
@@ -17,43 +17,51 @@ namespace GymMgmt.Api
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // ==========================================
+            // 1. CONFIGURATION & SERVICES
+            // ==========================================
             var appSettings = builder.Configuration.Get<AppSettings>();
-            bool isDevelopment = builder.Environment.IsDevelopment();
+            builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JWT"));
+
             string defaultConnection = builder.Configuration.GetConnectionString("DefaultConnection")
                 ?? throw new EmptyConnectionStringException();
 
-
-            // Add services to the container.
-
-            builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JWT"));
-           
             builder.Services.AddApplicationServices(typeof(ApplicationDI).Assembly);
             builder.Services.AddInfrastructure(defaultConnection);
 
+            // Ensure you created the 'SwaggerServiceExtensions.cs' file for this to work
+            builder.Services.AddSwaggerDocumentation();
+
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
+
+            // ==========================================
+            // 2. SECURITY (CORS, AUTH, HEADERS)
+            // ==========================================
             const string DefaultCorsPolicyName = "CorsPolicy";
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy(DefaultCorsPolicyName, builder =>
+                options.AddPolicy(DefaultCorsPolicyName, policy =>
                 {
-                    // App:CorsOrigins in appsettings.json can contain more than one address separated
-                    // by comma.
-                    builder
-                        .WithOrigins(
-                            appSettings.AppConfig.CorsOrigins
-                                .Split(",", StringSplitOptions.RemoveEmptyEntries)
-                                .Select(o => o.TrimEnd('/'))
-                                .ToArray()
-                        )
-                        .SetIsOriginAllowedToAllowWildcardSubdomains()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials();
+                    var origins = appSettings?.AppConfig?.CorsOrigins?
+                        .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                        .Select(o => o.TrimEnd('/'))
+                        .ToArray() ?? Array.Empty<string>();
+
+                    policy.WithOrigins(origins)
+                          .SetIsOriginAllowedToAllowWildcardSubdomains() // Be careful with this in production
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials();
                 });
             });
-            var signingConfigurations = new JwtSigningConfigurations(appSettings.JWT.Secret);
 
+            var signingConfigurations = new JwtSigningConfigurations(appSettings!.JWT.Secret);
             builder.Services.AddSingleton(signingConfigurations);
-
             builder.Services.AddJwtAuthentication(appSettings.JWT, signingConfigurations);
 
             builder.Services.AddAuthorization(options =>
@@ -63,83 +71,81 @@ namespace GymMgmt.Api
                     .Build();
             });
 
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(c =>
+            // CRITICAL: Tells the app it is behind Nginx
+            builder.Services.Configure<ForwardedHeadersOptions>(options =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "AuthSystem.Api", Version = "v1" });
-                //c.EnableAnnotations();
-                //c.SchemaFilter<CustomSchemaFilters>();
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n
-                      Enter 'Bearer' [space] and then your token in the text input below.
-                      \r\n\r\nExample: 'Bearer 12345abcdef'",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
-                });
-
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-            {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            },
-                            Scheme = "oauth2",
-                            Name = "Bearer",
-                            In = ParameterLocation.Header,
-                        },
-                        new List<string>()
-                    }
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
-            });
-            builder.Services.AddControllers()
-                .AddJsonOptions(options =>
-                {
-                    // This allows passing "Active" instead of 1 in JSON bodies and often helps query strings too
-                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                });
-
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // ==========================================
+            // 3. THE PIPELINE (MIDDLEWARE ORDER MATTERS)
+            // ==========================================
+
+
+
+            // 1. Handlers for Nginx/Proxy headers must be first
+            app.UseForwardedHeaders();
+
+            // 2. Swagger (Dev only or if you specifically want it in Prod)
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            // 3. Routing & CORS
             app.UseRouting();
             app.UseCors(DefaultCorsPolicyName);
-            
 
+            // 4. Custom Exception Handler
             app.UseExceptionsHandlingMiddleware();
-            app.UseHttpsRedirection();
 
+            // 5. HTTPS Redirection
+            // WARNING: Comment this out if you get "Too Many Redirects" errors behind Nginx
+            // app.UseHttpsRedirection(); 
+
+            // 6. Auth
             app.UseAuthentication();
             app.UseAuthorization();
 
-
-
-            using (var scope = app.Services.CreateScope())
-            {
-                var roleInitializer = scope.ServiceProvider.GetRequiredService<IRoleInitializer>();
-                await roleInitializer.InitializeAsync();
-            }
+            // 7. Map Endpoints
             app.MapControllers();
 
-            app.Run();
+            // ==========================================
+            // 4. DATABASE MIGRATION & SEEDING (Merged Block)
+            // ==========================================
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {// A. Migrate Database
+                    var context = services.GetRequiredService<GymDbContext>();
+                    await context.Database.MigrateAsync();
+
+                    // B. Seed Roles (MUST BE FIRST)
+                    var roleInitializer = services.GetRequiredService<IRoleInitializer>();
+                    await roleInitializer.InitializeAsync();
+
+                    // C. Seed Admin User 
+                    var adminSeeder = services.GetRequiredService<IAdminSeeder>();
+                    await adminSeeder.SeedAdminAsync();  
+
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogInformation("Database migrated and seeded successfully.");
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "CRITICAL ERROR: Database migration failed.");
+                    // Optional: throw; // usage depends if you want the app to crash or continue running
+                }
+            }
+
+            await app.RunAsync();
         }
     }
-
-    
 }
 public class AppSettings
 {

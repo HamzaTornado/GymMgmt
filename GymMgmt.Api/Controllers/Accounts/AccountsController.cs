@@ -20,8 +20,7 @@ namespace GymMgmt.Api.Controllers.Accounts
             _mediator = mediator;
         }
 
-        //[Authorize(Roles = "Admin")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
         [HttpPost("CreateUser")]
         [ProducesResponseType(typeof(ApiResponse<Guid>), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), (int)HttpStatusCode.BadRequest)]

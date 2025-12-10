@@ -1,17 +1,20 @@
-name: CI
+name: CI/CD Pipeline
+
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+
 jobs:
+  # JOB 1: BUILD AND TEST (Your existing logic)
   build-and-test:
     runs-on: windows-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # Full history for coverage/tools
+        fetch-depth: 0
     - name: Setup .NET 8
       uses: actions/setup-dotnet@v4
       with:
@@ -40,7 +43,7 @@ jobs:
         if-no-files-found: ignore
     - name: Install ReportGenerator
       run: dotnet tool install --global dotnet-reportgenerator-globaltool
-    - name: Generate & enforce 70% line coverage
+    - name: Generate & enforce 50% line coverage
       shell: pwsh
       run: |
         reportgenerator `
@@ -53,7 +56,7 @@ jobs:
         $percent = [Math]::Round($lineRate * 100, 2)
         Write-Host "📊 Line coverage: $percent %" -ForegroundColor Green
         if ($percent -lt 50) {
-          Write-Error "❌ Coverage $percent % is below the required 70%"
+          Write-Error "❌ Coverage $percent % is below the required 50%"
           exit 1
         } else {
           Write-Host "✅ Coverage threshold met!" -ForegroundColor Green
@@ -65,3 +68,34 @@ jobs:
         name: coverage-report
         path: ./coverage-report
         if-no-files-found: warn
+
+  # JOB 2: DEPLOY TO VPS (New Logic)
+  deploy:
+    needs: build-and-test  # Waits for tests to pass first!
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' # Only deploy on Push to Main, not PRs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          script: |
+            # Stop script on first error
+            set -e
+
+            # 1. Navigate to your app folder (adjust path if needed)
+            cd /home/ubuntu/gym-app || cd /root/gym-app
+            
+            # 2. Pull the latest code
+            echo "⬇️ Pulling latest code..."
+            git pull origin main
+
+            # 3. Rebuild and Restart
+            echo "🚀 Rebuilding and deploying..."
+            docker compose up -d --build
+
+            # 4. Clean up old images
+            docker image prune -f
