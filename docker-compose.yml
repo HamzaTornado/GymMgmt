@@ -8,7 +8,7 @@ services:
     # REMOVED: ports: - "8080:8080"  <-- We don't expose this to the public internet anymore
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__DefaultConnection=Server=gym-db;Database=GymMasterDb;User Id=sa;Password=YourStrong!Password123;TrustServerCertificate=True;
+      - ConnectionStrings__DefaultConnection=Server=gym-db;Database=GymMasterDb;User Id=sa;Password=Gymdb2025@2025;TrustServerCertificate=True;
     depends_on:
       - gym-db
     restart: always
@@ -18,7 +18,7 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
       - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=YourStrong!Password123
+      - MSSQL_SA_PASSWORD=Gymdb2025@2025
     volumes:
       - sql_data:/var/opt/mssql
     restart: always
