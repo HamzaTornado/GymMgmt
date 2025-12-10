@@ -3,11 +3,7 @@ using GymMgmt.Domain.Entities.ClubSettingsConfig;
 using GymMgmt.Domain.Entities.Members;
 using GymMgmt.Domain.Entities.Payments;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace GymMgmt.Application.Features.Members.PayInsurrance
 {

@@ -1,11 +1,7 @@
 ﻿using GymMgmt.Domain.Entities.Subsciptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace GymMgmt.Infrastructure.Data.Subscriptions
 {
@@ -42,6 +38,12 @@ namespace GymMgmt.Infrastructure.Data.Subscriptions
                 .HasColumnType("decimal(18,2)")
                 .IsRequired();
 
+            // Indexes for performance
+            builder.HasIndex(x => x.Status)
+                .HasDatabaseName("IX_Subscriptions_Status");
+
+            builder.HasIndex(x => x.EndDate)
+                .HasDatabaseName("IX_Subscriptions_EndDate");
         }
     }
 }

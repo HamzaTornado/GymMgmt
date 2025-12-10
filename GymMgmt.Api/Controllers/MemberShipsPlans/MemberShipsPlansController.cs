@@ -1,5 +1,4 @@
 ﻿using GymMgmt.Api.Middlewares.Responses;
-using GymMgmt.Application.Common.Exceptions;
 using GymMgmt.Application.Features.Memberships.CreateMembership;
 using GymMgmt.Application.Features.Memberships.GetAllMemberShipsPlans;
 using GymMgmt.Application.Features.Memberships.GetMemberShipPlanById;
@@ -8,7 +7,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace GymMgmt.Api.Controllers.MemberShipsPlans
 {

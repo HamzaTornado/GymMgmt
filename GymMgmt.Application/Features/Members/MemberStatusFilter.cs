@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GymMgmt.Domain.Common.Enums
+namespace GymMgmt.Application.Features.Members
 {
-    public enum SubscriptionStatus
+    public enum MemberStatusFilter
     {
-        Active =1,
-        Grace = 2,
+        Active = 1,
+        GracePeriod = 2,
         Expired = 3,
         Cancelled = 4
     }

@@ -1,10 +1,16 @@
 ﻿using GymMgmt.Api.Middlewares.Responses;
+using GymMgmt.Application.Common.Models;
+using GymMgmt.Application.Features.Members;
 using GymMgmt.Application.Features.Members.CreateMember;
 using GymMgmt.Application.Features.Members.GetAllMembers;
 using GymMgmt.Application.Features.Members.GetMemberById;
 using GymMgmt.Application.Features.Members.PayInsurrance;
+using GymMgmt.Application.Features.Members.Queries.GetmembersByStatus;
+using GymMgmt.Application.Features.Members.Queries.GetMemberStatistics;
+using GymMgmt.Application.Features.Members.Queries;
 using GymMgmt.Application.Features.Members.UpdateMember;
 using GymMgmt.Application.Features.Memberships.UpdateMembershipPlan;
+using GymMgmt.Application.Features.Subscriptions.GetAllSubscriptions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -58,6 +64,21 @@ namespace GymMgmt.Api.Controllers.Members
             var result = await _mediator.Send(new GetAllMembersQuery());
             return Ok(ApiResponse<IEnumerable<ReadMemberDto>>.Success(result));
         }
+       
+
+        [AllowAnonymous]
+        [HttpGet("Memberslist/{filter}")]
+        [ProducesResponseType(typeof(ApiResponse<PaginatedList<MemberListDto>>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), (int)HttpStatusCode.BadRequest)]
+        public async Task<ActionResult> GetList(
+            MemberStatusFilter filter,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            var result = await _mediator.Send(new GetMembersByStatusQuery(filter, pageNumber, pageSize));
+            
+            return Ok(ApiResponse<PaginatedList<MemberListDto>>.Success(result));
+        }
 
         [AllowAnonymous]
         [HttpPut("{id:Guid}")]
@@ -85,5 +106,6 @@ namespace GymMgmt.Api.Controllers.Members
             return Ok(ApiResponse<bool>.Success(result));
         }
 
+        
     }
 }

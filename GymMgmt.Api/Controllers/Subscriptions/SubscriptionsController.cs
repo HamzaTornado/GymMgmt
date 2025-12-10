@@ -1,6 +1,8 @@
 ﻿using GymMgmt.Api.Middlewares.Responses;
+using GymMgmt.Application.Common.Models;
 using GymMgmt.Application.Features.Subscriptions.CancelSubscription;
 using GymMgmt.Application.Features.Subscriptions.ExtendSubscription;
+using GymMgmt.Application.Features.Subscriptions.GetAllSubscriptions;
 using GymMgmt.Application.Features.Subscriptions.StartSubscription;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -48,6 +50,21 @@ namespace GymMgmt.Api.Controllers.Subscriptions
         {
             var result = await _mediator.Send(command);
             return Ok(ApiResponse<bool>.Success(result, "Subscription cancelled successfully"));
+        }
+        /// <summary>
+        /// Gets a paginated list of subscriptions with filtering and sorting.
+        /// </summary>
+        /// 
+        [AllowAnonymous]
+        [HttpGet("GetSubscriptions")]
+        [ProducesResponseType(typeof(ApiResponse<PaginatedList<SubscriptionDto>>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<ApiResponse<PaginatedList<SubscriptionDto>>>> GetSubscriptions(
+            [FromQuery] GetSubscriptionsQuery query,
+            CancellationToken cancellationToken)
+        {
+            // MediatR sends the query to your GetSubscriptionsHandler
+            var result = await _mediator.Send(query, cancellationToken);
+            return Ok(ApiResponse<PaginatedList<SubscriptionDto>>.Success(result, "Subscription Retrieved successfully"));
         }
     }
 }

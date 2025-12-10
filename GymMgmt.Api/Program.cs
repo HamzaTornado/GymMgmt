@@ -8,6 +8,7 @@ using GymMgmt.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
 using GymMgmt.Api.Middlewares;
+using System.Text.Json.Serialization;
 
 namespace GymMgmt.Api
 {
@@ -99,6 +100,12 @@ namespace GymMgmt.Api
                     }
             });
             });
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    // This allows passing "Active" instead of 1 in JSON bodies and often helps query strings too
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
 
 
             var app = builder.Build();

@@ -1,4 +1,5 @@
 ﻿using GymMgmt.Application.Common.Interfaces;
+using GymMgmt.Application.Features.Subscriptions;
 using GymMgmt.Domain.Entities.ClubSettingsConfig;
 using GymMgmt.Domain.Entities.Members;
 using GymMgmt.Domain.Entities.Plans;
@@ -6,6 +7,7 @@ using GymMgmt.Infrastructure.Data;
 using GymMgmt.Infrastructure.Data.ClubSettingsConfig;
 using GymMgmt.Infrastructure.Data.Members;
 using GymMgmt.Infrastructure.Data.Plans;
+using GymMgmt.Infrastructure.Data.Subscriptions;
 using GymMgmt.Infrastructure.Exceptions;
 using GymMgmt.Infrastructure.Identity;
 using GymMgmt.Infrastructure.Identity.Models;
@@ -14,6 +16,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 
 namespace GymMgmt.Infrastructure
@@ -38,6 +41,13 @@ namespace GymMgmt.Infrastructure
                 // Apply interceptors
                 var interceptors = serviceProvider.GetServices<ISaveChangesInterceptor>();
                 options.AddInterceptors(interceptors);
+            });
+
+            // Scoped is recommended for connection factory
+            services.AddScoped<ISqlConnectionFactory>(sp =>
+            {
+                var logger = sp.GetRequiredService<ILogger<SqlConnectionFactory>>();
+                return new SqlConnectionFactory(connectionString!, logger);
             });
 
             // Register the IUnitOfWork interface
