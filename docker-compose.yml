@@ -5,13 +5,23 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    # REMOVED: ports: - "8080:8080"  <-- We don't expose this to the public internet anymore
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
+      # Note: Consider using ${SA_PASSWORD} for better security instead of hardcoding
       - ConnectionStrings__DefaultConnection=Server=gym-db;Database=GymMasterDb;User Id=sa;Password=Gymdb2025@2025;TrustServerCertificate=True;
+      - JWT__Secret=${JWT_SECRET}
+      - JWT__Issuer=${DOMAIN_NAME}
+      - JWT__Audience=${DOMAIN_NAME}
+      - JWT__TokenValidityInMinutes=60
+      - JWT__RefreshTokenValidityInMinutes=1440
+      - AppConfig__CorsOrigins=${DOMAIN_NAME},http://localhost:5173,https://localhost:7077
+      - AppConfig__ApiVirtualPath=${DOMAIN_NAME}
     depends_on:
       - gym-db
     restart: always
+    networks:
+      - proxy_net   # connects to the internet (via Proxy Manager)
+      - internal_net # connects to the database
 
   # 2. SQL Server Database
   gym-db:
@@ -22,17 +32,13 @@ services:
     volumes:
       - sql_data:/var/opt/mssql
     restart: always
+    networks:
+      - internal_net # Only accessible by the API, safe from the internet!
 
-  # 3. Nginx Reverse Proxy (NEW)
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"  # Opens Port 80 on the VPS
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - gym-api
-    restart: always
+  # REMOVED: The manual 'nginx' service. 
+  # Nginx Proxy Manager is already running separately and handles Port 80.
 
-volumes:
-  sql_data:
+networks:
+  proxy_net:
+    external: true  # This network must already exist (docker network create proxy_net)
+  internal_net:     # This creates a private link between API and DB
