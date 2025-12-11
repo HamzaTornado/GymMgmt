@@ -7,8 +7,8 @@ services:
       dockerfile: Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      # Note: Consider using ${SA_PASSWORD} for better security instead of hardcoding
-      - ConnectionStrings__DefaultConnection=Server=gym-db;Database=GymMasterDb;User Id=sa;Password=Gymdb2025@2025;TrustServerCertificate=True;
+      # Using variable from .env for DB password is safer
+      - ConnectionStrings__DefaultConnection=Server=gym-db;Database=GymMasterDb;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;
       - JWT__Secret=${JWT_SECRET}
       - JWT__Issuer=${DOMAIN_NAME}
       - JWT__Audience=${DOMAIN_NAME}
@@ -20,25 +20,26 @@ services:
       - gym-db
     restart: always
     networks:
-      - proxy_net   # connects to the internet (via Proxy Manager)
-      - internal_net # connects to the database
+      - proxy_net
+      - internal_net
 
   # 2. SQL Server Database
   gym-db:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
       - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=Gymdb2025@2025
+      - MSSQL_SA_PASSWORD=${SA_PASSWORD}
     volumes:
       - sql_data:/var/opt/mssql
     restart: always
     networks:
-      - internal_net # Only accessible by the API, safe from the internet!
+      - internal_net
 
-  # REMOVED: The manual 'nginx' service. 
-  # Nginx Proxy Manager is already running separately and handles Port 80.
-
+# 3. Network & Volume Definitions
 networks:
   proxy_net:
-    external: true  # This network must already exist (docker network create proxy_net)
-  internal_net:     # This creates a private link between API and DB
+    external: true
+  internal_net:
+
+volumes:    
+  sql_data: 
