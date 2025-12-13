@@ -1,6 +1,43 @@
-@GymMgmt.Api_HostAddress = http://localhost:5178
+# ----------------------------------------------------
+# 1. SETUP VARIABLES
+# ----------------------------------------------------
+# Uncomment the one you want to test:
 
-GET {{GymMgmt.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+# OPTION A: Local Development
+# @HostAddress = https://localhost:7182
+
+# OPTION B: Your VPS (Live Production)
+@HostAddress = http://54.36.180.149
+
+# Common Headers
+@ContentType = application/json
 
 ###
+
+# ----------------------------------------------------
+# 2. LOGIN (Get the Token)
+# ----------------------------------------------------
+# This request logs in and saves the token automatically into the 'authToken' variable.
+# Replace 'email' and 'password' with your seed data.
+# ----------------------------------------------------
+# @name loginRequest
+POST {{HostAddress}}/api/auth/login
+Content-Type: {{ContentType}}
+
+{
+  "email": "admin@gym.com",
+  "password": "AdminPassword!123"
+}
+
+###
+
+# ----------------------------------------------------
+# 3. GET DATA (Using the Token)
+# ----------------------------------------------------
+# We use the token captured from the request above.
+# ----------------------------------------------------
+@authToken = {{loginRequest.response.body.token}}
+
+GET {{HostAddress}}/api/members
+Authorization: Bearer {{authToken}}
+Content-Type: {{ContentType}}

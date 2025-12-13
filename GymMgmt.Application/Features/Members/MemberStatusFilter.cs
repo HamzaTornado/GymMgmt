@@ -8,9 +8,10 @@ namespace GymMgmt.Application.Features.Members
 {
     public enum MemberStatusFilter
     {
-        Active = 1,
-        GracePeriod = 2,
-        Expired = 3,
-        Cancelled = 4
+        All = 1,
+        Active = 2,
+        GracePeriod = 3,
+        Expired = 4,
+        Cancelled = 5
     }
 }

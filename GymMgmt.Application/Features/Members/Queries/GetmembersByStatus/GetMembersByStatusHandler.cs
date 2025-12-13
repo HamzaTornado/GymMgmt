@@ -26,6 +26,7 @@ namespace GymMgmt.Application.Features.Members.Queries.GetmembersByStatus
             // 1. Determine the WHERE clause based on the Enum
             string whereClause = request.StatusFilter switch
             {
+                MemberStatusFilter.All =>"",
                 MemberStatusFilter.Active =>
                     "WHERE s.Status = 'Active' AND s.EndDate >= @Now",
 
