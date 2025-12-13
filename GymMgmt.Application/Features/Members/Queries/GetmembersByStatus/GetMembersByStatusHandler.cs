@@ -2,11 +2,7 @@
 using GymMgmt.Application.Common.Interfaces;
 using GymMgmt.Application.Common.Models;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace GymMgmt.Application.Features.Members.Queries.GetmembersByStatus
 {
@@ -23,10 +19,12 @@ namespace GymMgmt.Application.Features.Members.Queries.GetmembersByStatus
         {
             using var connection = _connectionFactory.CreateNewConnection();
 
-            // 1. Determine the WHERE clause based on the Enum
+            // 1. Dynamic WHERE Clause
+            // Note: We alias Subscriptions as 's' and Members as 'm' later
             string whereClause = request.StatusFilter switch
             {
-                MemberStatusFilter.All =>"",
+                MemberStatusFilter.All => "", // No filter
+
                 MemberStatusFilter.Active =>
                     "WHERE s.Status = 'Active' AND s.EndDate >= @Now",
 
@@ -39,30 +37,36 @@ namespace GymMgmt.Application.Features.Members.Queries.GetmembersByStatus
                 MemberStatusFilter.Cancelled =>
                     "WHERE s.Status = 'Cancelled'",
 
-                _ => "WHERE 1=0" // Should not happen
+                _ => "WHERE 1=0"
             };
 
             var sql = $@"
             DECLARE @GraceDays INT = (SELECT TOP 1 SubscriptionGracePeriodInDays FROM ClubSettings);
             DECLARE @Now DATETIME2 = SYSDATETIME();
 
-            -- Count Total
+            -- Count Total (Matching the filter)
             SELECT COUNT(*) 
-            FROM Subscriptions s 
+            FROM Members m
+            LEFT JOIN Subscriptions s ON m.Id = s.MemberId
             {whereClause};
 
             -- Get Data
             SELECT 
                 m.Id as MemberId,
                 m.FirstName + ' ' + m.LastName as FullName,
-                s.PlanName,
-                s.EndDate,
+                ISNULL(s.PlanName, 'No Plan') as PlanName, -- Handle NULL for prospects
+                ISNULL(s.EndDate, '1900-01-01') as EndDate, -- Handle NULL dates
                 m.PhoneNumber,
-                DATEDIFF(day, s.EndDate, @Now) as DaysOverdue
-            FROM Subscriptions s
-            INNER JOIN Members m ON s.MemberId = m.Id
+                CASE 
+                    WHEN s.EndDate IS NULL THEN 0 
+                    ELSE DATEDIFF(day, s.EndDate, @Now) 
+                END as DaysOverdue
+            FROM Members m
+            LEFT JOIN Subscriptions s ON m.Id = s.MemberId
             {whereClause}
-            ORDER BY s.EndDate ASC -- Prioritize those expiring soonest
+            ORDER BY 
+                CASE WHEN s.EndDate IS NULL THEN 1 ELSE 0 END, -- Put 'No Plan' people at the bottom
+                s.EndDate ASC
             OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY;";
 
             using var multi = await connection.QueryMultipleAsync(sql, new
