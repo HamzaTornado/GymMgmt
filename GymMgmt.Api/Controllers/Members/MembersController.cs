@@ -15,6 +15,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using GymMgmt.Application.Features.Members.DeleteMember;
 
 namespace GymMgmt.Api.Controllers.Members
 {
@@ -106,6 +107,19 @@ namespace GymMgmt.Api.Controllers.Members
             return Ok(ApiResponse<bool>.Success(result));
         }
 
-        
+        [HttpDelete("DeleteMember/{id:Guid}")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<bool>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), (int)HttpStatusCode.BadRequest)]
+        public async Task<ActionResult> DeleteMember(Guid id)
+        {
+            var deleteMemberCommand = new DeleteMemberCommand(id);
+            var result = await _mediator.Send(deleteMemberCommand);
+
+            return Ok(ApiResponse<bool>.Success(result));
+        }
+
+
+
     }
 }

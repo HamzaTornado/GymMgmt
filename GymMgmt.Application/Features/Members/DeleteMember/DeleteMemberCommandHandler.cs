@@ -7,7 +7,7 @@ using MediatR;
 
 namespace AuthSystem.Application.Features.Memebers.DeleteMember
 {
-    public class DeleteMemberCommandHandler : IRequestHandler<DeleteMemberCommand, Guid>
+    public class DeleteMemberCommandHandler : IRequestHandler<DeleteMemberCommand, bool>
     {
         private readonly IMemberRepository _memberRepository;
         private readonly IMapper _mapper;
@@ -18,7 +18,7 @@ namespace AuthSystem.Application.Features.Memebers.DeleteMember
             _mapper = mapper;
         }
 
-        public async Task<Guid> Handle(DeleteMemberCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(DeleteMemberCommand request, CancellationToken cancellationToken)
         {
             var memberId = MemberId.FromValue(request.Id);
             var member = await _memberRepository.FindByIdAsync(memberId, cancellationToken)
@@ -26,7 +26,7 @@ namespace AuthSystem.Application.Features.Memebers.DeleteMember
 
              _memberRepository.Delete(member);
 
-            return request.Id;
+            return true;
         }
 
     }
