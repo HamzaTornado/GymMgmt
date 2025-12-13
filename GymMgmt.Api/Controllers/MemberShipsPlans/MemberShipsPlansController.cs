@@ -41,7 +41,7 @@ namespace GymMgmt.Api.Controllers.MemberShipsPlans
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<ReadMemberShipPlanDto>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), (int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult> GetMember(Guid id)
+        public async Task<ActionResult> GetMemberShipPlan(Guid id)
         {
             var result = await _mediator.Send(new GetMemberShipPlanByIdQuery(id));
 
@@ -52,7 +52,7 @@ namespace GymMgmt.Api.Controllers.MemberShipsPlans
         [HttpGet]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<ReadMemberShipPlanDto>>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), (int)HttpStatusCode.BadRequest)]
-        public async Task<ActionResult> GetAllMembers()
+        public async Task<ActionResult> GetMembershipPlans()
         {
             var result = await _mediator.Send(new GetAllMemberShipsPlansQuery());
             return Ok(ApiResponse<IEnumerable<ReadMemberShipPlanDto>>.Success(result));
