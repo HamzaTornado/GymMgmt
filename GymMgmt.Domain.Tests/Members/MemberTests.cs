@@ -77,21 +77,22 @@ public class MemberTests
             "1 Month",
             30,
             200m);
-
+        var now = DateTime.Now;
         var address = new Address("123 Rue Atlas", "Fès", "Fès-Meknes", "30000");
 
         var memberResult = Member.Create(
             "Hamza", "Zeroual", "0677740092", null, address);
 
         // Ensure member creation was successful before dereferencing  
-        Assert.True(memberResult!=null);
+
         var member = memberResult;
 
-        member.MarkInsuranceAsPaid();
-
+        var clubsettings = ClubSettings.Create(insuranceFee);
+        member.RecordInsurancePayment(now, clubsettings);
+        Assert.True(memberResult != null);
         var ex = Assert.Throws<InsuranceFeeAlreadyPaidException>(() =>
         {
-            member.MarkInsuranceAsPaid();
+            member.RecordInsurancePayment(now, clubsettings);
         });
         Assert.Equal("INSURANCE_FEE_ALREADY_PAID", ex.ErrorCode);
     }
@@ -109,7 +110,8 @@ public class MemberTests
         var now = DateTime.Now;
         var member = builder.Build();
 
-        member.MarkInsuranceAsPaid();
+        var clubsettings = ClubSettings.Create(insuranceFee);
+        member.RecordInsurancePayment(now, clubsettings);
         var subscription = member.StartSubscription(oneMonthPlan, insuranceFee, isInsuranceRequired: false, now);
         subscription.Extend(oneMonthPlan);
 
@@ -129,8 +131,9 @@ public class MemberTests
         var builder = new MemberBuilder();
         var now = DateTime.Now;
         var member = builder.Build();
+        var clubsettings = ClubSettings.Create(insuranceFee);
+        member.RecordInsurancePayment(now, clubsettings);
 
-        member.MarkInsuranceAsPaid();
         var subscription = member.StartSubscription(oneMonthPlan, insuranceFee, isInsuranceRequired: false, now); 
         subscription.Revoke();
 

@@ -203,7 +203,7 @@ namespace GymMgmt.Domain.Entities.Members
         {
 
             if (IsInsuredOn(paymentDate))
-                throw new InsuranceAlreadyActiveException(Id.Value,paymentDate);
+                throw new InsuranceFeeAlreadyPaidException(GetFullName());
 
             MarkInsuranceAsPaid(paymentDate);
 

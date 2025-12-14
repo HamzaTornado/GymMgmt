@@ -47,6 +47,7 @@ namespace GymMgmt.Domain.Tests.Subscriptions
                 "1 Month",
                 1,
                 200m);
+            var clubsettings = ClubSettings.Create(insuranceFee);
 
             var address = new Address("123 Rue Atlas", "Fès", "Fès-Meknes", "30000");
             var memberResult = Member.Create(
@@ -56,10 +57,11 @@ namespace GymMgmt.Domain.Tests.Subscriptions
                 email: null,
                 address: address);
 
-            Assert.True(memberResult != null);
-            var member = memberResult;
-            member.MarkInsuranceAsPaid();
 
+            var now  = DateTime.Now;
+            var member = memberResult;
+            member.RecordInsurancePayment(now, clubsettings);
+            Assert.True(memberResult != null);
             // Act
             var subscription = member.StartSubscription(oneMonthPlan, insuranceFee, false, DateTime.Now);
 
