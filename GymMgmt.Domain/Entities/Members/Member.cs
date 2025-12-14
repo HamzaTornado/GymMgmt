@@ -90,10 +90,12 @@ namespace GymMgmt.Domain.Entities.Members
                 !s.IsInGracePeriod(settings.SubscriptionGracePeriodInDays));
         }
 
-        public void MarkInsuranceAsPaid()
+        private void MarkInsuranceAsPaid(DateTime paymentDate)
         {
-            if (HasPaidInsurance)
+            // Check if they were ALREADY insured on the specific date they are trying to pay for.
+            if (IsInsuredOn(paymentDate))
                 throw new InsuranceFeeAlreadyPaidException(GetFullName());
+
             HasPaidInsurance = true;
         }
         public Subscription StartSubscription(
@@ -203,7 +205,7 @@ namespace GymMgmt.Domain.Entities.Members
             if (IsInsuredOn(paymentDate))
                 throw new InsuranceAlreadyActiveException(Id.Value,paymentDate);
 
-            MarkInsuranceAsPaid(); // to prevent the Payment object to be in the _payments collection in memory in case the same instance in the same unit of work raised saveChange 
+            MarkInsuranceAsPaid(paymentDate);
 
             // --- NORMALIZE THE DATES ---
 

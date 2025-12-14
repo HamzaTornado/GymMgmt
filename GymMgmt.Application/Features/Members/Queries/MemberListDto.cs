@@ -13,6 +13,8 @@ namespace GymMgmt.Application.Features.Members.Queries
         public string PlanName { get; set; } = string.Empty;
         public DateTime EndDate { get; set; }
         public string PhoneNumber { get; set; } = string.Empty;
-        public int DaysOverdue { get; set; } // Useful for UI
+        public bool HasActiveSubscription { get; set; } // NEW
+        public bool PaidInsurance { get; set; } //NEW
+        public int DaysOverdue { get; set; }
     }
 }

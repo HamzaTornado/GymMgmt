@@ -43,9 +43,6 @@ namespace GymMgmt.Application.Features.Members.PayInsurrance
             var dateTimenow = DateTime.Now;
 
             var payment =member.RecordInsurancePayment(dateTimenow, clubsettings, request.Refrence);
-
-
-
             return payment != null;
         }
     }

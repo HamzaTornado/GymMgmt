@@ -10,6 +10,7 @@ namespace GymMgmt.Application.Features.Members.Queries
     int ActiveCount,
     int GracePeriodCount,
     int ExpiredCount,
-    int CancelledCount
-);
+    int CancelledCount,
+    int ActivePaidInsuranceCount
+    );
 }
