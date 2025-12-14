@@ -38,9 +38,9 @@ namespace GymMgmt.Application.Features.Members.UpdateMember
                 .WithMessage("Le numéro de téléphone ne doit pas dépasser 20 caractères.");
 
             // Validate Address only if it's not null
-            When(x => x.AddressDto is not null, () =>
+            When(x => x.Address is not null, () =>
             {
-                RuleFor(x => x.AddressDto!).SetValidator(new AddressDtoValidator());
+                RuleFor(x => x.Address!).SetValidator(new AddressDtoValidator());
             });
         }
     }

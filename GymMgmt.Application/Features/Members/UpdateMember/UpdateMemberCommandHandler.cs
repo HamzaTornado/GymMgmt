@@ -32,7 +32,7 @@ namespace GymMgmt.Application.Features.Members.UpdateMember
 
             member.UpdateName(request.FirstName, request.LastName);
             member.UpdatePhoneNumber(request.PhoneNumber);
-            member.UpdateAddress(_mapper.Map<Address>(request.AddressDto));
+            member.UpdateAddress(_mapper.Map<Address>(request.Address));
             member.UpdateEmail(request.Email);
 
             return _mapper.Map<ReadMemberDto>(member);

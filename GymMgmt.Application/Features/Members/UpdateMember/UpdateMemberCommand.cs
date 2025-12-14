@@ -11,6 +11,6 @@ namespace GymMgmt.Application.Features.Members.UpdateMember
         string LastName,
         string? Email,
         string PhoneNumber,
-        AddressDto? AddressDto
+        AddressDto? Address
         ) : ICommand<ReadMemberDto>;
 }
