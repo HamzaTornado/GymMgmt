@@ -49,8 +49,6 @@ namespace GymMgmt.Application.Features.Payments.CreatePaymentFor
                     request.PeriodEnd,
                     request.Refrence
                     );
-               
-                member.MarkInsuranceAsPaid();
             }
             else if (request.PaymentType == PaymentType.Subscription)
             {
