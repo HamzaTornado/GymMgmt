@@ -135,7 +135,7 @@ public class MemberTests
         member.RecordInsurancePayment(now, clubsettings);
 
         var subscription = member.StartSubscription(oneMonthPlan, insuranceFee, isInsuranceRequired: false, now); 
-        subscription.Revoke();
+        subscription.Revoke(now);
 
         var ex = Assert.Throws<NoActiveSubscriptionException>(() =>
         {

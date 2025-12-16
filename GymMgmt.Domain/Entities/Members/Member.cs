@@ -152,18 +152,7 @@ namespace GymMgmt.Domain.Entities.Members
             return active.Extend(extensionPlan);
         }
 
-        public void CancelCurrentSubscription()
-        {
-            var active = _subscriptions
-                .FirstOrDefault(s => s.Status == SubscriptionStatus.Active)
-                ?? throw new NoActiveSubscriptionException(Id.Value, "cancel");
-
-            active.Revoke();
-        }
-
-        /// <summary>
-        /// Finds the active subscription and "soft cancels" it.
-        /// </summary>
+        // "I want to stop paying next month" (Soft Cancel)
         public void CancelCurrentSubscriptionAtPeriodEnd()
         {
             var active = _subscriptions
@@ -172,6 +161,7 @@ namespace GymMgmt.Domain.Entities.Members
 
             active.CancelAtPeriodEnd();
         }
+
         /// <summary>
         /// Finds the active subscription and re-enables its renewal.
         /// </summary>
@@ -183,17 +173,17 @@ namespace GymMgmt.Domain.Entities.Members
 
             active.EnableRenewal();
         }
-
         /// <summary>
         /// Finds the active subscription and "hard cancels" (bans) it.
         /// </summary>
-        public void RevokeCurrentSubscription()
+        // "You are banned/voided" (Hard Cancel)
+        public void RevokeCurrentSubscription(DateTime cancellationDate)
         {
             var active = _subscriptions
                 .FirstOrDefault(s => s.Status == SubscriptionStatus.Active)
                 ?? throw new NoActiveSubscriptionException(Id.Value, "revoke");
 
-            active.Revoke();
+            active.Revoke(cancellationDate);
         }
 
         public Payment RecordInsurancePayment(

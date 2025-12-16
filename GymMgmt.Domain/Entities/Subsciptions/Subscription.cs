@@ -30,11 +30,10 @@ namespace GymMgmt.Domain.Entities.Subsciptions
             Price = plan.Price;
             Status = SubscriptionStatus.Active;
         }
-
         public static Subscription Create(
-        SubscriptionId id,
-        DateTime startDate,
-        MembershipPlan plan)
+            SubscriptionId id,
+            DateTime startDate,
+            MembershipPlan plan)
         {
             // 1. Normalize start date: Nov 12, 2025 00:00:00
             var normalizedStartDate = startDate.Date;
@@ -43,11 +42,37 @@ namespace GymMgmt.Domain.Entities.Subsciptions
             var provisionalEndDate = plan.CalculateEndDate(normalizedStartDate);
 
             // 3. Normalize end date to the end of that day: Dec 11, 2025 23:59:59...
+            // We add 1 day and subtract 1 tick to get the very last moment of the day.
             var normalizedEndDate = provisionalEndDate.Date.AddDays(1).AddTicks(-1);
 
             return new Subscription(id, normalizedStartDate, normalizedEndDate, plan);
-
         }
+
+        public (DateTime NewPeriodStart, DateTime NewPeriodEnd) Extend(MembershipPlan extensionPlan)
+        {
+            if (Status != SubscriptionStatus.Active)
+                throw new NoActiveSubscriptionException(Id.Value, "extend");
+
+            // 1. Calculate the start of the NEW period.
+            // Since the old period ended at 23:59:59, we take the DATE component and add 1 day.
+            // Example: Old End = Jan 14 23:59:59 -> Start = Jan 15 00:00:00
+            var extensionStartDate = this.EndDate.Date.AddDays(1);
+
+            // 2. Calculate provisional new end date
+            var provisionalNewEndDate = extensionPlan.CalculateEndDate(extensionStartDate);
+
+            // 3. Normalize the new end date to 23:59:59...
+            var normalizedNewEndDate = provisionalNewEndDate.Date.AddDays(1).AddTicks(-1);
+
+            // Set the new EndDate
+            EndDate = normalizedNewEndDate;
+            Price = extensionPlan.Price;
+            PlanName = $"Extended: {extensionPlan.Name}";
+
+            // Return the period we just calculated
+            return (extensionStartDate, normalizedNewEndDate);
+        }
+
         public void Activate()
         {
             if (Status == SubscriptionStatus.Active)
@@ -58,31 +83,20 @@ namespace GymMgmt.Domain.Entities.Subsciptions
 
             Status = SubscriptionStatus.Active;
         }
-        public void Revoke()
+        public void Revoke(DateTime cancellationDate)
         {
             if (Status != SubscriptionStatus.Active)
                 throw new NoActiveSubscriptionException(Id.Value, "revoke");
 
+            // Safety 1: Don't extend it if it already ended in the past
+            if (cancellationDate > EndDate) cancellationDate = EndDate;
+
+            // Safety 2: Don't set end date before it even started
+            if (cancellationDate < StartDate) cancellationDate = StartDate;
+
+            // Apply the "Hard Cancel"
+            EndDate = cancellationDate;
             Status = SubscriptionStatus.Cancelled;
-
-        }
-
-        public (DateTime NewPeriodStart, DateTime NewPeriodEnd) Extend(MembershipPlan extensionPlan)
-        {
-            if (Status != SubscriptionStatus.Active)
-                throw new NoActiveSubscriptionException(Id.Value, "extend");
-
-            var extensionStartDate = this.EndDate.Date.AddDays(1);
-            var provisionalNewEndDate = extensionPlan.CalculateEndDate(extensionStartDate);
-            var normalizedNewEndDate = provisionalNewEndDate.Date.AddDays(1).AddTicks(-1);
-
-            // Set the new EndDate
-            EndDate = normalizedNewEndDate;
-            Price = extensionPlan.Price;
-            PlanName = $"Extended: {extensionPlan.Name}";
-
-            // Return the period we just calculated
-            return (extensionStartDate, normalizedNewEndDate);
         }
         public void CancelAtPeriodEnd()
         {

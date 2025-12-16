@@ -63,6 +63,7 @@ namespace GymMgmt.Application.Features.Members.Queries.GetmembersByStatus
                     m.FirstName + ' ' + m.LastName as FullName,
                     ISNULL(s.PlanName, 'No Plan') as PlanName,
                     ISNULL(s.EndDate, '1900-01-01') as EndDate,
+                    ISNULL(s.Status, 'New') as SubscriptionStatus,
                     m.PhoneNumber,
         
                     CASE 

@@ -37,6 +37,8 @@ namespace GymMgmt.Infrastructure.Identity
                     // 2. Create the User object
                     var newAdmin = new ApplicationUser
                     {
+                        FirstName = "Admin",
+                        LastName  = "Admin",
                         UserName = adminEmail,
                         Email = adminEmail,
                         EmailConfirmed = true

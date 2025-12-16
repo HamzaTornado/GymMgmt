@@ -14,6 +14,7 @@ namespace GymMgmt.Application.Features.Members.Queries
         public DateTime EndDate { get; set; }
         public string PhoneNumber { get; set; } = string.Empty;
         public bool HasActiveSubscription { get; set; } // NEW
+        public string SubscriptionStatus { get; set; } = string.Empty;
         public bool PaidInsurance { get; set; } //NEW
         public int DaysOverdue { get; set; }
     }

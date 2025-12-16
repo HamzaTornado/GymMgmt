@@ -1,21 +1,22 @@
 ﻿using GymMgmt.Application.Common.Exceptions;
+using GymMgmt.Application.Common.Interfaces;
 using GymMgmt.Domain.Entities.Members;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace GymMgmt.Application.Features.Subscriptions.CancelSubscription
 {
     internal class CancelSubscriptionCommandHandler : IRequestHandler<CancelSubscriptionCommand, bool>
     {
         private readonly IMemberRepository _memberRepository;
+        private readonly IDateTimeService _dateTimeService;
 
-        public CancelSubscriptionCommandHandler(IMemberRepository memberRepository)
+        public CancelSubscriptionCommandHandler(
+            IMemberRepository memberRepository,
+            IDateTimeService dateTimeService)
         {
             _memberRepository = memberRepository;
+            _dateTimeService = dateTimeService;
         }
 
         public async Task<bool> Handle(CancelSubscriptionCommand request, CancellationToken cancellationToken)
@@ -26,10 +27,9 @@ namespace GymMgmt.Application.Features.Subscriptions.CancelSubscription
             {
                 throw new NotFoundException($"Member with ID {request.MemberId} Not Found");
             }
-
             // 2. Call the domain logic
             // The NoActiveSubscriptionException is handled by the aggregate
-            member.CancelCurrentSubscription();
+            member.CancelCurrentSubscription(_dateTimeService.Now.DateTime);
 
             // 3. Return
             // The UnitOfWorkBehavior will save the change of status
