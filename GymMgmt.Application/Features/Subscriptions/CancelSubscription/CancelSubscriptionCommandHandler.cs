@@ -29,7 +29,7 @@ namespace GymMgmt.Application.Features.Subscriptions.CancelSubscription
             }
             // 2. Call the domain logic
             // The NoActiveSubscriptionException is handled by the aggregate
-            member.CancelCurrentSubscription(_dateTimeService.Now.DateTime);
+            member.CancelCurrentSubscriptionAtPeriodEnd();
 
             // 3. Return
             // The UnitOfWorkBehavior will save the change of status
