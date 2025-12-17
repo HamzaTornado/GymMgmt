@@ -1,4 +1,5 @@
-﻿using GymMgmt.Domain.Entities.Subsciptions;
+﻿using GymMgmt.Domain.Entities.Members;
+using GymMgmt.Domain.Entities.Subsciptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -18,6 +19,17 @@ namespace GymMgmt.Infrastructure.Data.Subscriptions
             builder.Property(x => x.Id)
                 .HasConversion(id => id.Value, value => SubscriptionId.FromValue(value))
                 .IsRequired();
+
+            builder.Property(p => p.MemberId)
+                .HasConversion(id => id.Value, value => MemberId.FromValue(value))
+                .HasColumnName("MemberId") // Explicitly map to column
+                .IsRequired();
+
+            
+            builder.HasOne(s => s.Member)
+                .WithMany(m => m.Subscriptions)
+                .HasForeignKey(s=>s.MemberId) 
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Property(x => x.StartDate)
                 .HasColumnName("StartDate")

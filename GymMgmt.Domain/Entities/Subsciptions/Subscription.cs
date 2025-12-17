@@ -1,5 +1,6 @@
 ﻿using GymMgmt.Domain.Common;
 using GymMgmt.Domain.Common.Enums;
+using GymMgmt.Domain.Entities.Members;
 using GymMgmt.Domain.Entities.Plans;
 using GymMgmt.Domain.Exceptions;
 
@@ -8,6 +9,8 @@ namespace GymMgmt.Domain.Entities.Subsciptions
 {
     public class Subscription : AuditableEntity<SubscriptionId>
     {
+        public MemberId MemberId { get; private set; }
+        public virtual Member Member { get; private set; } = null!;
         public DateTime StartDate { get; private set; }
         public DateTime EndDate { get; private set; }
         public string PlanName { get; private set; } = string.Empty;
@@ -19,11 +22,13 @@ namespace GymMgmt.Domain.Entities.Subsciptions
 
         private Subscription(
         SubscriptionId id,
+        MemberId memberId, // 2. Add to Private Constructor
         DateTime startDate,
         DateTime endDate,
         MembershipPlan plan)
         {
             Id = id;
+            MemberId = memberId; // 3. Set it
             StartDate = startDate;
             EndDate = endDate;
             PlanName = plan.Name;
@@ -32,6 +37,7 @@ namespace GymMgmt.Domain.Entities.Subsciptions
         }
         public static Subscription Create(
             SubscriptionId id,
+            MemberId memberId,
             DateTime startDate,
             MembershipPlan plan)
         {
@@ -45,7 +51,7 @@ namespace GymMgmt.Domain.Entities.Subsciptions
             // We add 1 day and subtract 1 tick to get the very last moment of the day.
             var normalizedEndDate = provisionalEndDate.Date.AddDays(1).AddTicks(-1);
 
-            return new Subscription(id, normalizedStartDate, normalizedEndDate, plan);
+            return new Subscription(id,memberId, normalizedStartDate, normalizedEndDate, plan);
         }
 
         public (DateTime NewPeriodStart, DateTime NewPeriodEnd) Extend(MembershipPlan extensionPlan)
@@ -96,7 +102,7 @@ namespace GymMgmt.Domain.Entities.Subsciptions
 
             // Apply the "Hard Cancel"
             EndDate = cancellationDate;
-            Status = SubscriptionStatus.Cancelled;
+            Status = SubscriptionStatus.Revoked;
         }
         public void CancelAtPeriodEnd()
         {

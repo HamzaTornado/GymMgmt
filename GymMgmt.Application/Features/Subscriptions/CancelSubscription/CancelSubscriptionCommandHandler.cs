@@ -9,14 +9,12 @@ namespace GymMgmt.Application.Features.Subscriptions.CancelSubscription
     internal class CancelSubscriptionCommandHandler : IRequestHandler<CancelSubscriptionCommand, bool>
     {
         private readonly IMemberRepository _memberRepository;
-        private readonly IDateTimeService _dateTimeService;
 
         public CancelSubscriptionCommandHandler(
-            IMemberRepository memberRepository,
-            IDateTimeService dateTimeService)
+            IMemberRepository memberRepository)
         {
             _memberRepository = memberRepository;
-            _dateTimeService = dateTimeService;
+
         }
 
         public async Task<bool> Handle(CancelSubscriptionCommand request, CancellationToken cancellationToken)

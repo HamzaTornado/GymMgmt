@@ -123,6 +123,7 @@ namespace GymMgmt.Domain.Entities.Members
             // Create the subscription
             var subscription = Subscription.Create(
                 SubscriptionId.New(),
+                Id,
                 startDate.Value,
                 plan);
 
@@ -181,7 +182,7 @@ namespace GymMgmt.Domain.Entities.Members
         {
             var active = _subscriptions
                 .FirstOrDefault(s => s.Status == SubscriptionStatus.Active)
-                ?? throw new NoActiveSubscriptionException(Id.Value, "revoke");
+                ?? throw new NoActiveSubscriptionException(Id.Value, "Cancelled");
 
             active.Revoke(cancellationDate);
         }
