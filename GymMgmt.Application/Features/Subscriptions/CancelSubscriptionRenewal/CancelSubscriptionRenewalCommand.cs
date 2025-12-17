@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GymMgmt.Application.Features.Subscriptions.CancelSubscription
+namespace GymMgmt.Application.Features.Subscriptions.CancelSubscriptionRenewal
 {
-    public record CancelSubscriptionCommand(Guid MemberId) : ICommand<bool>;
+    public record CancelSubscriptionRenewalCommand(Guid MemberId) : ICommand<bool>;
 }

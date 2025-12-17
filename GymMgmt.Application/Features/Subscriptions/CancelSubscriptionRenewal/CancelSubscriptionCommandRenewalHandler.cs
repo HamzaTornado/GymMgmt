@@ -1,23 +1,23 @@
 ﻿using GymMgmt.Application.Common.Exceptions;
-using GymMgmt.Application.Common.Interfaces;
+
 using GymMgmt.Domain.Entities.Members;
 using MediatR;
 
 
-namespace GymMgmt.Application.Features.Subscriptions.CancelSubscription
+namespace GymMgmt.Application.Features.Subscriptions.CancelSubscriptionRenewal
 {
-    internal class CancelSubscriptionCommandHandler : IRequestHandler<CancelSubscriptionCommand, bool>
+    internal class CancelSubscriptionCommandRenewalHandler : IRequestHandler<CancelSubscriptionRenewalCommand, bool>
     {
         private readonly IMemberRepository _memberRepository;
 
-        public CancelSubscriptionCommandHandler(
+        public CancelSubscriptionCommandRenewalHandler(
             IMemberRepository memberRepository)
         {
             _memberRepository = memberRepository;
 
         }
 
-        public async Task<bool> Handle(CancelSubscriptionCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(CancelSubscriptionRenewalCommand request, CancellationToken cancellationToken)
         {
             // 1. Load the Member aggregate
             var member = await _memberRepository.FindByIdAsync(MemberId.FromValue(request.MemberId), cancellationToken);

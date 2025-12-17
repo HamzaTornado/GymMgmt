@@ -1,6 +1,7 @@
 ﻿using GymMgmt.Api.Middlewares.Responses;
 using GymMgmt.Application.Common.Models;
 using GymMgmt.Application.Features.Subscriptions.CancelSubscription;
+using GymMgmt.Application.Features.Subscriptions.CancelSubscriptionRenewal;
 using GymMgmt.Application.Features.Subscriptions.EnableSubscriptionRenewal;
 using GymMgmt.Application.Features.Subscriptions.ExtendSubscription;
 using GymMgmt.Application.Features.Subscriptions.GetAllSubscriptions;
@@ -47,7 +48,7 @@ namespace GymMgmt.Api.Controllers.Subscriptions
         [HttpPost("Cancel-Renewal")]
         [ProducesResponseType(typeof(ApiResponse<bool>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), (int)HttpStatusCode.BadRequest)]
-        public async Task<ActionResult> CancelSubscriptionRenewal([FromBody] CancelSubscriptionCommand command)
+        public async Task<ActionResult> CancelSubscriptionRenewal([FromBody] CancelSubscriptionRenewalCommand command)
         {
             var result = await _mediator.Send(command);
             return Ok(ApiResponse<bool>.Success(result, "Subscription Renewal cancelled successfully"));

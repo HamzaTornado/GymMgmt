@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GymMgmt.Application.Features.Subscriptions.CancelSubscription
+namespace GymMgmt.Application.Features.Subscriptions.CancelSubscriptionRenewal
 {
-    internal class CancelSubscriptionValidator : AbstractValidator<CancelSubscriptionCommand>
+    internal class CancelSubscriptionRenewalValidator : AbstractValidator<CancelSubscriptionRenewalCommand>
     {
-        public CancelSubscriptionValidator()
+        public CancelSubscriptionRenewalValidator()
         {
             RuleFor(v => v.MemberId)
                 .NotEmpty().WithMessage("Member ID is required.");
